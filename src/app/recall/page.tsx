@@ -3,123 +3,131 @@
 import { useEffect, useRef, useState } from "react";
 import Card from "../components/Card";
 import { Check, Eye, EyeOff, X } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function Recall() {
     const rememberBtn = useRef<HTMLButtonElement>(null);
     const forgetBtn = useRef<HTMLButtonElement>(null);
     const topWord = useRef<HTMLDivElement>(null);
+    const router = useRouter();
+    const params = useSearchParams();
+    const dictionary = params.get("dictionary");
+
+    useEffect(() => {
+        console.log(dictionary);
+
+        if (
+            localStorage &&
+            localStorage.getItem("dictionaries") &&
+            dictionary
+        ) {
+            setVocabulary(
+                JSON.parse(localStorage.getItem("dictionaries") as string)[
+                    dictionary
+                ]
+            );
+        }
+    }, [dictionary]);
+
     const [vocabulary, setVocabulary] = useState<
         {
-            word: string;
-            translation: string;
+            front: string;
+            back: string;
         }[]
-    >([
-        {
-            word: "handkerchief",
-            translation: "носовой платок",
-        },
-        {
-            word: "umbrella",
-            translation: "зонт",
-        },
-        {
-            word: "pencil",
-            translation: "карандаш",
-        },
-        {
-            word: "book",
-            translation: "книга",
-        },
-        {
-            word: "table",
-            translation: "стол",
-        },
-    ]);
+    >([]);
 
     const [isTranslation, setIsTranslation] = useState(false);
 
+    const onRememberClick = () => {
+        console.log("REMEMBER");
+
+        const fadeAnimation = topWord.current?.animate(
+            [
+                {
+                    opacity: 1,
+                    transform:
+                        "translateX(-50%) rotate(-20deg) translateY(24px)",
+                },
+                {
+                    opacity: 0,
+                    transform: "translateX(-120%) rotate(-40deg) ",
+                },
+                {
+                    opacity: 0,
+                    transform: "translateX(-200%) rotate(40deg) ",
+                },
+            ],
+            {
+                duration: 300,
+            }
+        );
+        fadeAnimation!.onfinish = () => {
+            topWord.current!.style.opacity = "0";
+            setVocabulary((prev) => {
+                const newVocabulary = [...prev.slice(0, prev.length - 1)];
+                if (newVocabulary.length === 0) router.push("/");
+
+                return newVocabulary;
+            });
+        };
+    };
+
+    const onForgetClick = () => {
+        const fadeAnimation = topWord.current!.animate(
+            [
+                {
+                    opacity: 1,
+                    transform: "translateX(50%) rotate(20deg) translateY(24px)",
+                },
+                {
+                    opacity: 0,
+                    transform: "translateX(120%) rotate(40deg) ",
+                },
+
+                {
+                    opacity: 0,
+                    transform: "translateX(200%) rotate(40deg) ",
+                },
+            ],
+            {
+                duration: 300,
+            }
+        );
+        fadeAnimation.onfinish = () => {
+            topWord.current!.style.opacity = "0";
+            setVocabulary((prev) => {
+                const newVocabulary = [...prev.slice(0, prev.length - 1)];
+
+                if (newVocabulary.length === 0) router.push("/");
+                return newVocabulary;
+            });
+        };
+    };
     useEffect(() => {
-        forgetBtn.current?.addEventListener("touchstart", () => {
-            topWord.current?.classList.add("onTouchForgot");
-            console.log(topWord.current);
-        });
-        forgetBtn.current?.addEventListener("touchend", () => {
-            topWord.current?.classList.remove("onTouchForgot");
-            console.log(topWord.current);
-        });
-        rememberBtn.current?.addEventListener("touchstart", () => {
-            topWord.current?.classList.add("onTouchRemember");
-            console.log(topWord.current);
-        });
-        rememberBtn.current?.addEventListener("touchend", () => {
-            topWord.current?.classList.remove("onTouchRemember");
-            console.log(topWord.current);
-        });
+        if (vocabulary.length !== 0) {
+            forgetBtn.current?.addEventListener("touchstart", () => {
+                topWord.current?.classList.add("onTouchForgot");
+            });
+            forgetBtn.current?.addEventListener("touchend", () => {
+                topWord.current?.classList.remove("onTouchForgot");
+            });
+            rememberBtn.current?.addEventListener("touchstart", () => {
+                topWord.current?.classList.add("onTouchRemember");
+            });
+            rememberBtn.current?.addEventListener("touchend", () => {
+                topWord.current?.classList.remove("onTouchRemember");
+            });
+            console.log("HERE");
 
-        rememberBtn.current?.addEventListener("click", () => {
-            const fadeAnimation = topWord.current?.animate(
-                [
-                    {
-                        opacity: 1,
-                        transform:
-                            "translateX(-50%) rotate(-20deg) translateY(24px)",
-                    },
-                    {
-                        opacity: 0,
-                        transform: "translateX(-120%) rotate(-40deg) ",
-                    },
-                    {
-                        opacity: 0,
-                        transform: "translateX(-200%) rotate(40deg) ",
-                    },
-                ],
-                {
-                    duration: 300,
-                }
-            );
-            fadeAnimation!.onfinish = () => {
-                topWord.current!.style.opacity = "0";
-                setVocabulary((prev) => {
-                    const newVocabulary = [...prev.slice(0, prev.length - 1)];
-                    console.log(newVocabulary);
+            rememberBtn.current?.addEventListener("click", onRememberClick);
+            forgetBtn.current?.addEventListener("click", onForgetClick);
+        }
 
-                    return newVocabulary;
-                });
-            };
-        });
-
-        forgetBtn.current?.addEventListener("click", () => {
-            const fadeAnimation = topWord.current!.animate(
-                [
-                    {
-                        opacity: 1,
-                        transform:
-                            "translateX(50%) rotate(20deg) translateY(24px)",
-                    },
-                    {
-                        opacity: 0,
-                        transform: "translateX(120%) rotate(40deg) ",
-                    },
-
-                    {
-                        opacity: 0,
-                        transform: "translateX(200%) rotate(40deg) ",
-                    },
-                ],
-                {
-                    duration: 300,
-                }
-            );
-            fadeAnimation.onfinish = () => {
-                topWord.current!.style.opacity = "0";
-                setVocabulary((prev) => {
-                    const newVocabulary = [...prev.slice(0, prev.length - 1)];
-
-                    return newVocabulary;
-                });
-            };
-        });
-    }, []);
+        return () => {
+            rememberBtn.current?.removeEventListener("click", onRememberClick);
+            forgetBtn.current?.removeEventListener("click", onForgetClick);
+        };
+    }, [vocabulary]);
 
     return (
         <>
@@ -163,8 +171,8 @@ export default function Recall() {
                             </span> */}
                         {/* </span> */}
                         <Card
-                            word={item.word}
-                            translation={item.translation}
+                            word={item.front}
+                            translation={item.back}
                             isTranslation={isTranslation}
                         />
                     </div>

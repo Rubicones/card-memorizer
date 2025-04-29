@@ -20,7 +20,7 @@ export default function Dictionary({
     return (
         <>
             <div
-                className={`m-3 w-full border-2 rounded-md border-neutral-500 self-center flex flex-col py-1`}
+                className={`mt-6 m-2 w-full border-2 rounded-md border-neutral-500 self-center flex flex-col py-1`}
             >
                 <div className='w-full flex justify-between items-center px-4 font-semibold text-neutral-200 pb-1'>
                     <span>{title}</span>
@@ -48,9 +48,16 @@ export default function Dictionary({
                                         {areBacksVisible ? item.back : "∗∗∗∗∗"}
                                     </span>
                                 </div>
-                                <div className='flex justify-center items-center text-neutral-200'>
+                                <button
+                                    onClick={() => {
+                                        items = items.filter(
+                                            (_, i) => i !== index
+                                        );
+                                    }}
+                                    className='flex justify-center items-center text-neutral-200'
+                                >
                                     <Trash size={16} />
-                                </div>
+                                </button>
                             </div>
                         ))}
                     </div>
@@ -59,7 +66,7 @@ export default function Dictionary({
             <Button
                 className='w-full text-md flex justify-center gap-2 items-center'
                 onClick={() => {
-                    router.push("/recall");
+                    router.push(`/recall?&dictionary=${title}`);
                 }}
             >
                 <Play fill={"black"} className='size-3' />

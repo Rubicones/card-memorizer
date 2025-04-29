@@ -1,180 +1,178 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Card from "./components/Card";
-import { Check, Eye, EyeOff, X } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Plus } from "lucide-react";
+import { Birthstone } from "next/font/google";
+import { Imperial_Script } from "next/font/google";
+import { Tangerine } from "next/font/google";
+import { useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import Dictionary from "./components/Dictionary";
 
+const birthstone = Birthstone({
+    variable: "--font-birthstone",
+    subsets: ["latin"],
+    weight: "400",
+});
+const imperialScript = Imperial_Script({
+    variable: "--font-imperialScript",
+    subsets: ["latin"],
+    weight: "400",
+});
+const tangerine = Tangerine({
+    variable: "--font-tangerine",
+    subsets: ["latin"],
+    weight: "400",
+});
 export default function Home() {
-    const rememberBtn = useRef<HTMLButtonElement>(null);
-    const forgetBtn = useRef<HTMLButtonElement>(null);
-    const topWord = useRef<HTMLDivElement>(null);
     const [vocabulary, setVocabulary] = useState<
         {
-            word: string;
-            translation: string;
+            front: string;
+            back: string;
         }[]
     >([
         {
-            word: "handkerchief",
-            translation: "носовой платок",
+            front: "handkerchief",
+            back: "носовой платок",
         },
         {
-            word: "umbrella",
-            translation: "зонт",
+            front: "umbrella",
+            back: "зонт",
         },
         {
-            word: "pencil",
-            translation: "карандаш",
+            front: "pencil",
+            back: "карандаш",
         },
         {
-            word: "book",
-            translation: "книга",
+            front: "book",
+            back: "книга",
         },
         {
-            word: "table",
-            translation: "стол",
+            front: "table",
+            back: "стол",
         },
     ]);
-
-    const [isTranslation, setIsTranslation] = useState(false);
-
-    useEffect(() => {
-        const wordCards = document.querySelectorAll(".wordCard");
-        console.log(wordCards);
-
-        forgetBtn.current?.addEventListener("touchstart", () => {
-            topWord.current?.classList.add("onTouchForgot");
-            console.log(topWord.current);
-        });
-        forgetBtn.current?.addEventListener("touchend", () => {
-            topWord.current?.classList.remove("onTouchForgot");
-            console.log(topWord.current);
-        });
-        rememberBtn.current?.addEventListener("touchstart", () => {
-            topWord.current?.classList.add("onTouchRemember");
-            console.log(topWord.current);
-        });
-        rememberBtn.current?.addEventListener("touchend", () => {
-            topWord.current?.classList.remove("onTouchRemember");
-            console.log(topWord.current);
-        });
-
-        rememberBtn.current?.addEventListener("click", () => {
-            const fadeAnimation = topWord.current?.animate(
-                [
-                    {
-                        opacity: 1,
-                        transform:
-                            "translateX(-50%) rotate(-20deg) translateY(24px)",
-                    },
-                    {
-                        opacity: 0,
-                        transform: "translateX(-120%) rotate(-40deg) ",
-                    },
-                    {
-                        opacity: 0,
-                        transform: "translateX(-200%) rotate(40deg) ",
-                    },
-                ],
-                {
-                    duration: 300,
-                }
-            );
-            fadeAnimation!.onfinish = () => {
-                topWord.current!.style.opacity = "0";
-                setVocabulary((prev) => {
-                    console.log(prev);
-
-                    const newVocabulary = [...prev.slice(0, prev.length - 1)];
-                    console.log(newVocabulary);
-
-                    return newVocabulary;
-                });
-            };
-        });
-
-        forgetBtn.current?.addEventListener("click", () => {
-            const fadeAnimation = topWord.current!.animate(
-                [
-                    {
-                        opacity: 1,
-                        transform:
-                            "translateX(50%) rotate(20deg) translateY(24px)",
-                    },
-                    {
-                        opacity: 0,
-                        transform: "translateX(120%) rotate(40deg) ",
-                    },
-
-                    {
-                        opacity: 0,
-                        transform: "translateX(200%) rotate(40deg) ",
-                    },
-                ],
-                {
-                    duration: 300,
-                }
-            );
-            fadeAnimation.onfinish = () => {
-                topWord.current!.style.opacity = "0";
-                setVocabulary((prev) => {
-                    const newVocabulary = [...prev.slice(0, prev.length - 1)];
-                    console.log(newVocabulary);
-
-                    return newVocabulary;
-                });
-            };
-        });
-    }, []);
+    const [addNewCardDialogData, setAddNewCardDialogData] = useState({
+        front: "",
+        back: "",
+        rotation: useRef(Math.floor(Math.random() * 5)),
+        rotationDirection: useRef(Math.random() > 0.5 ? "-" : ""),
+        isOpen: false,
+    });
 
     return (
         <>
-            <div className='w-screen h-screen bg-primary flex justify-center items-center relative overflow-hidden '>
-                <button
-                    ref={rememberBtn}
-                    className='peer/accept border-2 rounded-full size-16 border-white bottom-1/4 left-[calc(50%-32px-64px-16px)] absolute flex items-center justify-center'
+            <div
+                className={cn(
+                    imperialScript.variable,
+                    birthstone.variable,
+                    tangerine.variable,
+                    "w-screen h-screen flex flex-col justify-start items-start relative overflow-hidden p-6"
+                )}
+            >
+                <span className={`birthstone-regular text-white text-6xl`}>
+                    Memento
+                </span>
+                <span
+                    className={`birthstone-regular text-neutral-300 text-4xl -translate-y-3`}
                 >
-                    <Check className='text-white size-8' />
-                </button>
-                <button
-                    onClick={() => {
-                        setIsTranslation((prev) => !prev);
+                    Memorize foreign words the most pure way
+                </span>
+                <Dictionary items={vocabulary} title='English' />
+                <Dialog
+                    open={addNewCardDialogData.isOpen}
+                    onOpenChange={(state) => {
+                        setAddNewCardDialogData((prev) => ({
+                            ...prev,
+                            isOpen: state,
+                        }));
                     }}
-                    className='border-2 rounded-full size-16 border-white bottom-1/4 left-[calc(50%-32px)] absolute flex items-center justify-center'
                 >
-                    {!isTranslation ? (
-                        <EyeOff className='text-white size-8' />
-                    ) : (
-                        <Eye className='text-white size-8' />
-                    )}
-                </button>
-                <button
-                    ref={forgetBtn}
-                    className='peer/deny border-2 rounded-full size-16 border-white bottom-1/4 left-[calc(50%-32px+64px+16px)] absolute flex items-center justify-center'
-                >
-                    <X className='text-white size-8' />
-                </button>
-                {vocabulary.map((item, index) => (
-                    <div
-                        key={index}
-                        ref={index === vocabulary.length - 1 ? topWord : null}
-                        className='wordCard group absolute flex flex-col gap-2 left-1/2 -translate-x-1/2 not-last:brightness-80 last:peer-hover/accept:-translate-x-full last:peer-hover/accept:translate-y-6 last:peer-hover/accept:rotate-[-20deg] last:peer-hover/deny:translate-x-0 last:peer-hover/deny:translate-y-6 last:peer-hover/deny:rotate-[20deg] transition-all duration-300'
-                    >
-                        {/* <span className='[.onTouchRemember_&]:opacity-100 opacity-0 text-neutral-400 font-semibold transition-all duration-300 group-last:block hidden'> */}
-                        {/* <span className='[.onTouchForgot_&]:block hidden'>
-                                I DON&apos;T remember this word
-                            </span>
-                            <span className='[.onTouchRemember_&]:block hidden'>
-                                I DO remember this word
-                            </span> */}
-                        {/* </span> */}
-                        <Card
-                            word={item.word}
-                            translation={item.translation}
-                            isTranslation={isTranslation}
-                        />
-                    </div>
-                ))}
+                    <DialogTrigger>
+                        <div className='absolute text-black size-14 right-5 bottom-5 bg-white rounded-lg p-4 flex items-center justify-center z-30'>
+                            <Plus className='size-16' />
+                        </div>
+                    </DialogTrigger>
+                    <DialogContent className='sm:max-w-[425px]'>
+                        <DialogHeader>
+                            <DialogTitle>Add new card</DialogTitle>
+                            <DialogDescription></DialogDescription>
+                        </DialogHeader>
+                        <div className='flex flex-col gap-4 py-4'>
+                            <div
+                                style={{
+                                    rotate: `${addNewCardDialogData.rotationDirection.current}${addNewCardDialogData.rotation.current}deg`,
+                                }}
+                                className={`self-center bg-black w-[300px] h-[150px] border-2 border-neutral-500 rounded-md flex flex-col justify-center items-center p-4`}
+                            >
+                                <div className='w-full relative z-0 flex flex-col items-center justify-center'>
+                                    <span className='z-0  select-none text-3xl text-white text-center w-full overflow-hidden whitespace-nowrap overflow-ellipsis'>
+                                        {addNewCardDialogData.front}
+                                    </span>
+                                    <span className='z-0 select-none text-2xl text-neutral-300  hyphens-auto text-center w-full overflow-hidden whitespace-nowrap overflow-ellipsis'>
+                                        {addNewCardDialogData.back}
+                                    </span>
+                                </div>
+                            </div>
+                            <div className='flex flex-col gap-2'>
+                                <Label className='text-right'>Front</Label>
+                                <Input
+                                    className='col-span-3'
+                                    onChange={(e) => {
+                                        setAddNewCardDialogData((prev) => ({
+                                            ...prev,
+                                            front: e.target.value,
+                                        }));
+                                    }}
+                                />
+                            </div>
+                            <div className='flex flex-col gap-2'>
+                                <Label className='text-right'>Back</Label>
+                                <Input
+                                    className='col-span-3'
+                                    onChange={(e) => {
+                                        setAddNewCardDialogData((prev) => ({
+                                            ...prev,
+                                            back: e.target.value,
+                                        }));
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <Button
+                                onClick={() => {
+                                    setVocabulary((prev) => [
+                                        ...prev,
+                                        {
+                                            front: addNewCardDialogData.front,
+                                            back: addNewCardDialogData.back,
+                                        },
+                                    ]);
+                                    setAddNewCardDialogData((prev) => ({
+                                        ...prev,
+                                        front: "",
+                                        back: "",
+                                        isOpen: false,
+                                    }));
+                                }}
+                            >
+                                Add card
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </div>
         </>
     );

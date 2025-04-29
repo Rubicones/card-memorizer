@@ -148,15 +148,44 @@
     transform: translateX(50%) translateY(24px) rotate(20deg);
 }
 
+.imperial-script-regular {
+    font-family: var(--font-imperialScript);
+    font-weight: 500;
+    font-style: normal;
+}
+
+.birthstone-regular {
+    font-family: var(--font-birthstone);
+    font-weight: 400;
+    font-style: normal;
+}
+
+.birthstone-regular {
+    font-family: var(--font-birthstone);
+    font-weight: 400;
+    font-style: normal;
+}
+
+.tangerine-regular {
+    font-family: var(--font-tangerine);
+    font-weight: 400;
+    font-style: normal;
+}
+
+.tangerine-bold {
+    font-family: var(--font-tangerine);
+    font-weight: 500;
+    font-style: normal;
+}
 
 @layer utilities {
-	/* Hide scrollbar for Chrome, Safari and Opera */
-	.no-scrollbar::-webkit-scrollbar {
-		display: none;
-	}
-	/* Hide scrollbar for IE, Edge and Firefox */
-	.no-scrollbar {
-		-ms-overflow-style: none; /* IE and Edge */
-		scrollbar-width: none; /* Firefox */
-	}
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+    }
 }

@@ -79,10 +79,14 @@ export default function Card({
         if (wordSpan.current && translationSpan.current) {
             flipCard();
         }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [word]);
 
     useEffect(() => {
-        if (flipNumber.current !== 0 && blurOut.current) {
+        console.log("Flip number: ", flipNumber.current);
+
+        if (flipNumber.current >= 1 && blurOut.current) {
             translationSpan.current?.classList.remove("temporarilyHidden");
             opacityIn.current?.play();
             blurIn.current?.play();
@@ -93,13 +97,15 @@ export default function Card({
                 flipCard();
             };
         }
-        flipNumber.current = 1;
+        flipNumber.current = flipNumber.current + 1;
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isTranslation]);
     return (
         <>
             <div
                 className={cn(
-                    `  rotate-[2deg] bg-primary w-[300px] h-[150px] border-2 border-neutral-500 rounded-md flex flex-col justify-center items-center p-4`,
+                    `  rotate-[2deg] bg-black w-[300px] h-[150px] border-2 border-neutral-500 rounded-md flex flex-col justify-center items-center p-4`,
                     classes
                 )}
                 style={{

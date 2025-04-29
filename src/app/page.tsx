@@ -132,7 +132,7 @@ export default function Home() {
                     imperialScript.variable,
                     birthstone.variable,
                     tangerine.variable,
-                    "w-screen h-screen flex flex-col justify-start items-start relative overflow-hidden p-6"
+                    "w-screen h-screen flex flex-col justify-start items-start relative overflow-hidden no-scrollbar overflow-y-scroll p-6"
                 )}
             >
                 <span className={`birthstone-regular text-white text-6xl`}>
@@ -160,7 +160,7 @@ export default function Home() {
                     }}
                 >
                     <DialogTrigger>
-                        <div className='absolute text-black size-14 right-5 bottom-5 bg-white rounded-lg p-4 flex items-center justify-center z-30'>
+                        <div className='fixed text-black size-14 right-5 bottom-5 bg-white rounded-lg p-4 flex items-center justify-center z-30'>
                             <Plus className='size-16' />
                         </div>
                     </DialogTrigger>

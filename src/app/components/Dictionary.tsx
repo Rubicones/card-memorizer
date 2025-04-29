@@ -15,7 +15,7 @@ export default function Dictionary({
     }[];
     title: string;
 }) {
-    const [areBacksVisible, setAreBacksVisible] = useState(true);
+    const [areBacksVisible, setAreBacksVisible] = useState(false);
     const router = useRouter();
     return (
         <>

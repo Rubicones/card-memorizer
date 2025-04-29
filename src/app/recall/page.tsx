@@ -4,8 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import Card from "../components/Card";
 import { Check, Eye, EyeOff, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export default function Recall() {
+function Recall() {
     const rememberBtn = useRef<HTMLButtonElement>(null);
     const forgetBtn = useRef<HTMLButtonElement>(null);
     const topWord = useRef<HTMLDivElement>(null);
@@ -131,53 +132,65 @@ export default function Recall() {
 
     return (
         <>
-            <div className='w-screen h-screen flex justify-center items-center relative overflow-hidden '>
-                <button
-                    ref={rememberBtn}
-                    className='peer/accept border-2 rounded-full size-16 border-white bottom-1/4 left-[calc(50%-32px-64px-16px)] absolute flex items-center justify-center'
-                >
-                    <Check className='text-white size-8' />
-                </button>
-                <button
-                    onClick={() => {
-                        setIsTranslation((prev) => !prev);
-                    }}
-                    className='border-2 rounded-full size-16 border-white bottom-1/4 left-[calc(50%-32px)] absolute flex items-center justify-center'
-                >
-                    {!isTranslation ? (
-                        <EyeOff className='text-white size-8' />
-                    ) : (
-                        <Eye className='text-white size-8' />
-                    )}
-                </button>
-                <button
-                    ref={forgetBtn}
-                    className='peer/deny border-2 rounded-full size-16 border-white bottom-1/4 left-[calc(50%-32px+64px+16px)] absolute flex items-center justify-center'
-                >
-                    <X className='text-white size-8' />
-                </button>
-                {vocabulary.map((item, index) => (
-                    <div
-                        key={index}
-                        ref={index === vocabulary.length - 1 ? topWord : null}
-                        className='wordCard group absolute flex flex-col gap-2 left-1/2 -translate-x-1/2 not-last:brightness-80 last:peer-hover/accept:-translate-x-full last:peer-hover/accept:translate-y-6 last:peer-hover/accept:rotate-[-20deg] last:peer-hover/deny:translate-x-0 last:peer-hover/deny:translate-y-6 last:peer-hover/deny:rotate-[20deg] transition-all duration-300'
+            <Suspense>
+                <div className='w-screen h-screen flex justify-center items-center relative overflow-hidden '>
+                    <button
+                        ref={rememberBtn}
+                        className='peer/accept border-2 rounded-full size-16 border-white bottom-1/4 left-[calc(50%-32px-64px-16px)] absolute flex items-center justify-center'
                     >
-                        {/* <span className='[.onTouchRemember_&]:opacity-100 opacity-0 text-neutral-400 font-semibold transition-all duration-300 group-last:block hidden'> */}
-                        {/* <span className='[.onTouchForgot_&]:block hidden'>
+                        <Check className='text-white size-8' />
+                    </button>
+                    <button
+                        onClick={() => {
+                            setIsTranslation((prev) => !prev);
+                        }}
+                        className='border-2 rounded-full size-16 border-white bottom-1/4 left-[calc(50%-32px)] absolute flex items-center justify-center'
+                    >
+                        {!isTranslation ? (
+                            <EyeOff className='text-white size-8' />
+                        ) : (
+                            <Eye className='text-white size-8' />
+                        )}
+                    </button>
+                    <button
+                        ref={forgetBtn}
+                        className='peer/deny border-2 rounded-full size-16 border-white bottom-1/4 left-[calc(50%-32px+64px+16px)] absolute flex items-center justify-center'
+                    >
+                        <X className='text-white size-8' />
+                    </button>
+                    {vocabulary.map((item, index) => (
+                        <div
+                            key={index}
+                            ref={
+                                index === vocabulary.length - 1 ? topWord : null
+                            }
+                            className='wordCard group absolute flex flex-col gap-2 left-1/2 -translate-x-1/2 not-last:brightness-80 last:peer-hover/accept:-translate-x-full last:peer-hover/accept:translate-y-6 last:peer-hover/accept:rotate-[-20deg] last:peer-hover/deny:translate-x-0 last:peer-hover/deny:translate-y-6 last:peer-hover/deny:rotate-[20deg] transition-all duration-300'
+                        >
+                            {/* <span className='[.onTouchRemember_&]:opacity-100 opacity-0 text-neutral-400 font-semibold transition-all duration-300 group-last:block hidden'> */}
+                            {/* <span className='[.onTouchForgot_&]:block hidden'>
                                 I DON&apos;T remember this word
                             </span>
                             <span className='[.onTouchRemember_&]:block hidden'>
                                 I DO remember this word
                             </span> */}
-                        {/* </span> */}
-                        <Card
-                            word={item.front}
-                            translation={item.back}
-                            isTranslation={isTranslation}
-                        />
-                    </div>
-                ))}
-            </div>
+                            {/* </span> */}
+                            <Card
+                                word={item.front}
+                                translation={item.back}
+                                isTranslation={isTranslation}
+                            />
+                        </div>
+                    ))}
+                </div>
+            </Suspense>
         </>
+    );
+}
+
+export default function RecallPageWrapper() {
+    return (
+        <Suspense>
+            <Recall />
+        </Suspense>
     );
 }

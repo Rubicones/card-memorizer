@@ -26,6 +26,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import axios from "axios";
 
 const birthstone = Birthstone({
     variable: "--font-birthstone",
@@ -42,74 +43,16 @@ const tangerine = Tangerine({
     subsets: ["latin"],
     weight: "400",
 });
+
+interface Card {
+    front: string;
+    back: string;
+}
+interface Dictionaries {
+    [key: string]: Card[];
+}
 export default function Home() {
-    const [dictionaries, setDictionaries] = useState<{
-        [key: string]: {
-            front: string;
-            back: string;
-        }[];
-    }>({
-        English: [
-            {
-                front: "handkerchief",
-                back: "носовой платок",
-            },
-            {
-                front: "umbrella",
-                back: "зонт",
-            },
-            {
-                front: "pencil",
-                back: "карандаш",
-            },
-            {
-                front: "book",
-                back: "книга",
-            },
-            {
-                front: "table",
-                back: "стол",
-            },
-            {
-                front: "cat",
-                back: "кот",
-            },
-            {
-                front: "dog",
-                back: "собака",
-            },
-            {
-                front: "car",
-                back: "машина",
-            },
-            {
-                front: "house",
-                back: "дом",
-            },
-        ],
-        History: [
-            {
-                front: "WW2",
-                back: "1939-1945",
-            },
-            {
-                front: "WW1",
-                back: "1914-1918",
-            },
-            {
-                front: "Napoleon",
-                back: "1769-1821",
-            },
-            {
-                front: "Peter I",
-                back: "1672-1725",
-            },
-            {
-                front: "Catherine II",
-                back: "1729-1796",
-            },
-        ],
-    });
+    const [dictionaries, setDictionaries] = useState<Dictionaries>({});
     const [addNewCardDialogData, setAddNewCardDialogData] = useState({
         front: "",
         back: "",
@@ -119,11 +62,32 @@ export default function Home() {
         isOpen: false,
     });
 
+    const updateDictionaries = (newDictionaries: Dictionaries) => {
+        axios
+            .post("/api/post_dictionaries", {
+                login: "rubicon",
+                dictionaries: newDictionaries,
+            })
+            .then(() => {
+                getDictionaries();
+            });
+    };
+
+    const getDictionaries = () => {
+        axios.get("/api/get_dictionaries?login=rubicon").then((res) => {
+            setDictionaries(res.data.data);
+        });
+    };
+
     useEffect(() => {
         if (localStorage) {
             localStorage.setItem("dictionaries", JSON.stringify(dictionaries));
         }
     }, [dictionaries]);
+
+    useEffect(() => {
+        getDictionaries();
+    }, []);
 
     return (
         <>
@@ -132,22 +96,31 @@ export default function Home() {
                     imperialScript.variable,
                     birthstone.variable,
                     tangerine.variable,
-                    "w-screen h-screen flex flex-col justify-start items-start relative overflow-hidden no-scrollbar overflow-y-scroll p-6"
+                    "w-screen h-screen flex flex-col justify-start items-start relative overflow-hidden no-scrollbar overflow-y-scroll overscroll-contain p-6"
                 )}
             >
                 <span className={`birthstone-regular text-white text-6xl`}>
                     Memento
                 </span>
                 <span
-                    className={`birthstone-regular text-neutral-300 text-4xl -translate-y-3`}
+                    className={`birthstone-regular text-neutral-300 text-4xl -translate-y-4`}
                 >
-                    Memorize things the most pure way
+                    memorize things the most pure way
                 </span>
-                {Object.keys(dictionaries).map((key, index) => (
+                {Object.keys(dictionaries).map((key: string, index) => (
                     <Dictionary
                         key={index}
                         items={dictionaries[key]}
                         title={key}
+                        onItemRemove={(itemFront) => {
+                            const newItems = dictionaries[key].filter(
+                                (item) => item.front !== itemFront
+                            );
+                            updateDictionaries({
+                                ...dictionaries,
+                                [key]: newItems,
+                            });
+                        }}
                     />
                 ))}
                 <Dialog
@@ -250,22 +223,21 @@ export default function Home() {
                                 }
                                 className='w-full text-md flex justify-center gap-2 items-center'
                                 onClick={() => {
-                                    setDictionaries((prev) => {
-                                        const newVocabulary = {
-                                            front: addNewCardDialogData.front,
-                                            back: addNewCardDialogData.back,
-                                        };
-                                        return {
-                                            ...prev,
-                                            [addNewCardDialogData.dictionary]: [
-                                                ...prev[
-                                                    addNewCardDialogData
-                                                        .dictionary
-                                                ],
-                                                newVocabulary,
+                                    const newVocabulary = {
+                                        front: addNewCardDialogData.front,
+                                        back: addNewCardDialogData.back,
+                                    };
+
+                                    updateDictionaries({
+                                        ...dictionaries,
+                                        [addNewCardDialogData.dictionary]: [
+                                            ...dictionaries[
+                                                addNewCardDialogData.dictionary
                                             ],
-                                        };
+                                            newVocabulary,
+                                        ],
                                     });
+
                                     setAddNewCardDialogData((prev) => ({
                                         ...prev,
                                         front: "",

@@ -12,7 +12,7 @@ function Recall() {
     const topWord = useRef<HTMLDivElement>(null);
     const router = useRouter();
     const params = useSearchParams();
-    const dictionary = params.get("dictionary");
+    const dictionary = params?.get("dictionary");
 
     useEffect(() => {
         console.log(dictionary);

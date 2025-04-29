@@ -8,12 +8,14 @@ import { useRouter } from "next/navigation";
 export default function Dictionary({
     items,
     title,
+    onItemRemove,
 }: {
     items: {
         front: string;
         back: string;
     }[];
     title: string;
+    onItemRemove: (itemFront: string) => void;
 }) {
     const [areBacksVisible, setAreBacksVisible] = useState(false);
     const router = useRouter();
@@ -50,9 +52,7 @@ export default function Dictionary({
                                 </div>
                                 <button
                                     onClick={() => {
-                                        items = items.filter(
-                                            (_, i) => i !== index
-                                        );
+                                        onItemRemove(item.front);
                                     }}
                                     className='flex justify-center items-center text-neutral-200'
                                 >

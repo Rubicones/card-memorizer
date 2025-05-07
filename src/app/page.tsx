@@ -89,6 +89,10 @@ export default function Home() {
     const [isLoading, setIsLoading] = useState(true);
 
     const getDictionaries = () => {
+        if (!localStorage.getItem("sb-eecgcvumtskvsmesfbem-auth-token")) {
+            setIsLoading(false);
+            return;
+        }
         axios
             .get("/api/get_dictionaries", {
                 headers: {
@@ -503,6 +507,19 @@ export default function Home() {
                                     >
                                         Sign Up
                                     </Button>
+                                    {!signUpDialogData.isLogIn && (
+                                        <button
+                                            className='text-neutral-400 underline'
+                                            onClick={() => {
+                                                setSignUpDialogData((prev) => ({
+                                                    ...prev,
+                                                    isLogIn: !prev.isLogIn,
+                                                }));
+                                            }}
+                                        >
+                                            I already have an account
+                                        </button>
+                                    )}
                                 </div>
                             </DialogContent>
                         </Dialog>

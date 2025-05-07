@@ -148,6 +148,21 @@
     transform: translateX(50%) translateY(24px) rotate(20deg);
 }
 
+.revealAnimation {
+    animation: reveal 0.5s ease-in-out forwards;
+}
+
+@keyframes reveal {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
 .imperial-script-regular {
     font-family: var(--font-imperialScript);
     font-weight: 500;

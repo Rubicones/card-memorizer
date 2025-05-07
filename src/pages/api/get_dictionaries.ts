@@ -1,24 +1,45 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { supabase } from "../../lib/supabaseClient";
+import { createClient } from "@supabase/supabase-js";
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 export default async function handler(
-    req: NextApiRequest,
-    res: NextApiResponse
+  req: NextApiRequest,
+  res: NextApiResponse
 ) {
-    const login = req.query.login as string;
+  const token = req.headers.authorization?.replace("Bearer ", "");
 
-    const { data } = await supabase
-        .from("memento_data") // your Supabase table
-        .select("*")
-        .eq("login", login);
-    //   if (req.method === 'POST') {
-    //     // Handle POST request
-    //   } else if (req.method === 'GET') {
-    //     // Handle GET request
-    //   } else {
-    //     res.status(405).end(); // Method Not Allowed
-    //   }
-    return res
-        .status(200)
-        .json({ message: "Good morning", data: data![0].dictionaries });
+  if (!token) {
+    return res.status(401).json({ error: "Missing access token" });
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    global: { headers: { Authorization: `Bearer ${token}` } },
+  });
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return res.status(401).json({ error: "Invalid or expired token" });
+  }
+
+  const { data, error } = await supabase
+    .from("memento_data")
+    .select("dictionaries")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (error) {
+    return res.status(500).json({ error: "DB error", details: error.message });
+  }
+
+  if (!data) {
+    return res.status(404).json({ error: "No data found for user" });
+  }
+
+  return res.status(200).json({ data: data.dictionaries });
 }

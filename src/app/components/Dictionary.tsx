@@ -4,11 +4,23 @@ import { useState } from "react";
 import { Eye, EyeClosed, Play, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function Dictionary({
     items,
     title,
     onItemRemove,
+    onDictionaryRemove,
 }: {
     items: {
         front: string;
@@ -16,6 +28,7 @@ export default function Dictionary({
     }[];
     title: string;
     onItemRemove: (itemFront: string) => void;
+    onDictionaryRemove: (dictionaryTitle: string) => void;
 }) {
     const [areBacksVisible, setAreBacksVisible] = useState(false);
     const router = useRouter();
@@ -26,13 +39,47 @@ export default function Dictionary({
             >
                 <div className='w-full flex justify-between items-center px-4 font-semibold text-neutral-200 pb-1'>
                     <span>{title}</span>
-                    <button
-                        onClick={() => {
-                            setAreBacksVisible((prev) => !prev);
-                        }}
-                    >
-                        {areBacksVisible ? <Eye /> : <EyeClosed />}
-                    </button>
+                    <div className='flex gap-3 items-center'>
+                        <AlertDialog>
+                            <AlertDialogTrigger>
+                                <div>
+                                    <Trash size={16} strokeWidth='3' />
+                                </div>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                        Are you sure you want to delete this
+                                        dictionary?
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        The dictionary &quot;{title}&quot; will
+                                        be deleted. This action cannot be
+                                        undone.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>
+                                        Cancel
+                                    </AlertDialogCancel>
+                                    <AlertDialogAction
+                                        onClick={() => {
+                                            onDictionaryRemove(title);
+                                        }}
+                                    >
+                                        Continue
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                        <button
+                            onClick={() => {
+                                setAreBacksVisible((prev) => !prev);
+                            }}
+                        >
+                            {areBacksVisible ? <Eye /> : <EyeClosed />}
+                        </button>
+                    </div>
                 </div>
                 <div className='w-full h-[2px] bg-neutral-500'></div>
                 <div className='w-full flex justify-center'>

@@ -5,6 +5,10 @@ import Card from "../components/Card";
 import { Check, Eye, EyeOff, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { Card as CardItem } from "../page";
+import { useAppSelector } from "@/lib/store/hooks";
+import { CheckIcon } from "@/components/ui/check";
+import { updateDictionaries } from "@/lib/utils";
 
 function Recall() {
     const rememberBtn = useRef<HTMLButtonElement>(null);
@@ -13,34 +17,38 @@ function Recall() {
     const router = useRouter();
     const params = useSearchParams();
     const dictionary = params?.get("dictionary");
+    const dictionariesStore = useAppSelector((state) => state.dictionaries);
 
     useEffect(() => {
-        console.log(dictionary);
-
-        if (
-            localStorage &&
-            localStorage.getItem("dictionaries") &&
-            dictionary
-        ) {
-            setVocabulary(
-                JSON.parse(localStorage.getItem("dictionaries") as string)[
-                    dictionary
-                ]
-            );
+        if (dictionary) {
+            setVocabulary(dictionariesStore[dictionary]);
+            setNewDictionary(dictionariesStore[dictionary]);
         }
     }, [dictionary]);
 
-    const [vocabulary, setVocabulary] = useState<
-        {
-            front: string;
-            back: string;
-        }[]
-    >([]);
-
+    const [vocabulary, setVocabulary] = useState<CardItem[]>([]);
     const [isTranslation, setIsTranslation] = useState(false);
+    const [newDictionary, setNewDictionary] = useState<CardItem[]>([]);
 
-    const onRememberClick = () => {
-        console.log("REMEMBER");
+    const getUpdatedDictionary = (side: "lose" | "win") => {
+        return newDictionary.map((item) => {
+            if (item.front === vocabulary[vocabulary.length - 1].front) {
+                return {
+                    ...item,
+                    priority:
+                        side === "win"
+                            ? item.priority + 0.01
+                            : item.priority - 0.01,
+                };
+            }
+            return item;
+        });
+    };
+
+    const onRememberClick = async () => {
+        setIsTranslation(false);
+        if (vocabulary.length !== 1)
+            setNewDictionary(getUpdatedDictionary("win"));
 
         const fadeAnimation = topWord.current?.animate(
             [
@@ -66,14 +74,25 @@ function Recall() {
             topWord.current!.style.opacity = "0";
             setVocabulary((prev) => {
                 const newVocabulary = [...prev.slice(0, prev.length - 1)];
-                if (newVocabulary.length === 0) router.push("/");
+                if (newVocabulary.length === 0) {
+                    updateDictionaries({
+                        ...dictionariesStore,
+                        [dictionary as string]: getUpdatedDictionary("win"),
+                    }).then(() => {
+                        router.push("/");
+                    });
+                }
 
                 return newVocabulary;
             });
         };
     };
 
-    const onForgetClick = () => {
+    const onForgetClick = async () => {
+        setIsTranslation(false);
+        if (vocabulary.length !== 1)
+            setNewDictionary(getUpdatedDictionary("lose"));
+
         const fadeAnimation = topWord.current!.animate(
             [
                 {
@@ -99,7 +118,14 @@ function Recall() {
             setVocabulary((prev) => {
                 const newVocabulary = [...prev.slice(0, prev.length - 1)];
 
-                if (newVocabulary.length === 0) router.push("/");
+                if (newVocabulary.length === 0) {
+                    updateDictionaries({
+                        ...dictionariesStore,
+                        [dictionary as string]: getUpdatedDictionary("lose"),
+                    }).then(() => {
+                        router.push("/");
+                    });
+                }
                 return newVocabulary;
             });
         };
@@ -118,7 +144,6 @@ function Recall() {
             rememberBtn.current?.addEventListener("touchend", () => {
                 topWord.current?.classList.remove("onTouchRemember");
             });
-            console.log("HERE");
 
             rememberBtn.current?.addEventListener("click", onRememberClick);
             forgetBtn.current?.addEventListener("click", onForgetClick);
@@ -158,29 +183,38 @@ function Recall() {
                     >
                         <X className='text-white size-8' />
                     </button>
-                    {vocabulary.map((item, index) => (
-                        <div
-                            key={index}
-                            ref={
-                                index === vocabulary.length - 1 ? topWord : null
-                            }
-                            className='wordCard group absolute flex flex-col gap-2 left-1/2 -translate-x-1/2 not-last:brightness-80 last:peer-hover/accept:-translate-x-full last:peer-hover/accept:translate-y-6 last:peer-hover/accept:rotate-[-20deg] last:peer-hover/deny:translate-x-0 last:peer-hover/deny:translate-y-6 last:peer-hover/deny:rotate-[20deg] transition-all duration-300'
-                        >
-                            {/* <span className='[.onTouchRemember_&]:opacity-100 opacity-0 text-neutral-400 font-semibold transition-all duration-300 group-last:block hidden'> */}
-                            {/* <span className='[.onTouchForgot_&]:block hidden'>
+                    {vocabulary.length ? (
+                        vocabulary.map((item, index) => (
+                            <div
+                                key={index}
+                                ref={
+                                    index === vocabulary.length - 1
+                                        ? topWord
+                                        : null
+                                }
+                                className='wordCard group absolute flex flex-col gap-2 left-1/2 -translate-x-1/2 not-last:brightness-80 last:peer-hover/accept:-translate-x-full last:peer-hover/accept:translate-y-6 last:peer-hover/accept:rotate-[-20deg] last:peer-hover/deny:translate-x-0 last:peer-hover/deny:translate-y-6 last:peer-hover/deny:rotate-[20deg] transition-all duration-300'
+                            >
+                                {/* <span className='[.onTouchRemember_&]:opacity-100 opacity-0 text-neutral-400 font-semibold transition-all duration-300 group-last:block hidden'> */}
+                                {/* <span className='[.onTouchForgot_&]:block hidden'>
                                 I DON&apos;T remember this word
                             </span>
                             <span className='[.onTouchRemember_&]:block hidden'>
                                 I DO remember this word
                             </span> */}
-                            {/* </span> */}
-                            <Card
-                                word={item.front}
-                                translation={item.back}
-                                isTranslation={isTranslation}
-                            />
-                        </div>
-                    ))}
+                                {/* </span> */}
+                                <Card
+                                    word={item.front}
+                                    translation={item.back}
+                                    isTranslation={
+                                        index === vocabulary.length - 1 &&
+                                        isTranslation
+                                    }
+                                />
+                            </div>
+                        ))
+                    ) : (
+                        <CheckIcon size={62} className="revealAnimation"/>
+                    )}
                 </div>
             </Suspense>
         </>

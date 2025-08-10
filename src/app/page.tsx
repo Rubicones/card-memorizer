@@ -80,6 +80,7 @@ export default function Home() {
         password: "",
         passwordAgain: "",
         isLogIn: false,
+        isLoading: false,
     });
     const [createNewDictionaryDialogData, setCreateNewDictionaryDialogData] =
         useState({
@@ -107,6 +108,16 @@ export default function Home() {
             })
             .then((res) => {
                 dispatch(setDictionaries(res.data.data));
+            })
+            .catch((err) => {
+                if (err.response.data.error === "Invalid or expired token") {
+                    setSignUpDialogData((prev) => ({
+                        ...prev,
+                        isLogIn: true,
+                    }));
+                    setIsUserLoggedIn(false);
+                    localStorage.clear();
+                }
             })
             .finally(() => {
                 setIsLoading(false);
@@ -185,6 +196,7 @@ export default function Home() {
                                             getDictionaries();
                                         });
                                     }}
+                                    onCard
                                     onDictionaryRemove={(title) => {
                                         const newDictionaries = {
                                             ...dictionariesStore,
@@ -413,7 +425,11 @@ export default function Home() {
                 </div>
                 {!isUserLoggedIn && (
                     <div className='fixed top-0 left-0 blur-3xl bg-neutral-900/50 w-screen h-screen z-30'>
-                        <Dialog defaultOpen={true}>
+                        <Dialog
+                            defaultOpen={true}
+                            open={true}
+                            onOpenChange={() => {}}
+                        >
                             {/* <DialogTrigger>Open</DialogTrigger> */}
                             <DialogContent>
                                 <DialogHeader>
@@ -449,6 +465,7 @@ export default function Home() {
                                             Password
                                         </Label>
                                         <Input
+                                            type='password'
                                             className='col-span-3'
                                             onChange={(e) => {
                                                 setSignUpDialogData((prev) => ({
@@ -464,6 +481,7 @@ export default function Home() {
                                                 Password again
                                             </Label>
                                             <Input
+                                                type='password'
                                                 className='col-span-3'
                                                 onChange={(e) => {
                                                     setSignUpDialogData(
@@ -479,6 +497,14 @@ export default function Home() {
                                     )}
                                     <Button
                                         className='w-full text-md flex justify-center gap-2 items-center'
+                                        disabled={
+                                            signUpDialogData.isLoading ||
+                                            signUpDialogData.email.length == 0 || signUpDialogData.password
+                                            .length === 0 ||
+                                            (!signUpDialogData.isLogIn &&
+                                                signUpDialogData.password !==
+                                                    signUpDialogData.passwordAgain)
+                                        }
                                         onClick={() => {
                                             if (signUpDialogData.isLogIn) {
                                                 supabase.auth
@@ -487,7 +513,8 @@ export default function Home() {
                                                         password:
                                                             signUpDialogData.password,
                                                     })
-                                                    .then(() => {
+                                                    .then((res) => {
+                                                        console.log(res);
                                                         setIsUserLoggedIn(true);
                                                         getDictionaries();
                                                     });
@@ -498,16 +525,28 @@ export default function Home() {
                                                         password:
                                                             signUpDialogData.password,
                                                     })
-                                                    .then(() => {
+                                                    .then((res) => {
+                                                        console.log(res);
                                                         setIsUserLoggedIn(true);
                                                         getDictionaries();
                                                     });
                                             }
                                         }}
                                     >
-                                        Sign Up
+                                        {(() => {
+                                            switch (true) {
+                                                case signUpDialogData.isLoading:
+                                                    return (
+                                                        <LoaderCircle className='animate-spin' />
+                                                    );
+                                                case signUpDialogData.isLogIn:
+                                                    return "Log In";
+                                                default:
+                                                    return "Sign Up";
+                                            }
+                                        })()}
                                     </Button>
-                                    {!signUpDialogData.isLogIn && (
+                                    {!signUpDialogData.isLogIn ? (
                                         <button
                                             className='text-neutral-400 underline'
                                             onClick={() => {
@@ -518,6 +557,18 @@ export default function Home() {
                                             }}
                                         >
                                             I already have an account
+                                        </button>
+                                    ) : (
+                                        <button
+                                            className='text-neutral-400 underline'
+                                            onClick={() => {
+                                                setSignUpDialogData((prev) => ({
+                                                    ...prev,
+                                                    isLogIn: !prev.isLogIn,
+                                                }));
+                                            }}
+                                        >
+                                            I am a new Memento user
                                         </button>
                                     )}
                                 </div>

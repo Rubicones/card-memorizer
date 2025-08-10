@@ -78,9 +78,13 @@ function Recall() {
                     updateDictionaries({
                         ...dictionariesStore,
                         [dictionary as string]: getUpdatedDictionary("win"),
-                    }).then(() => {
-                        router.push("/");
-                    });
+                    })
+                        .then(() => {
+                            return new Promise((res) => setTimeout(res, 400));
+                        })
+                        .then(() => {
+                            router.push("/");
+                        });
                 }
 
                 return newVocabulary;
@@ -122,9 +126,13 @@ function Recall() {
                     updateDictionaries({
                         ...dictionariesStore,
                         [dictionary as string]: getUpdatedDictionary("lose"),
-                    }).then(() => {
-                        router.push("/");
-                    });
+                    })
+                        .then(() => {
+                            return new Promise((res) => setTimeout(res, 400));
+                        })
+                        .then(() => {
+                            router.push("/");
+                        });
                 }
                 return newVocabulary;
             });
@@ -183,7 +191,7 @@ function Recall() {
                     >
                         <X className='text-white size-8' />
                     </button>
-                    {vocabulary.length ? (
+                    {vocabulary && vocabulary.length ? (
                         vocabulary.map((item, index) => (
                             <div
                                 key={index}
@@ -213,7 +221,7 @@ function Recall() {
                             </div>
                         ))
                     ) : (
-                        <CheckIcon size={62} className="revealAnimation"/>
+                        <CheckIcon size={62} className='revealAnimation' />
                     )}
                 </div>
             </Suspense>

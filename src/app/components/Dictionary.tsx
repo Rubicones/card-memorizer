@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, EyeClosed, Play, Trash } from "lucide-react";
+import { Eye, EyeClosed, Play, Plus, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import {
@@ -40,6 +40,12 @@ export default function Dictionary({
                 <div className='w-full flex justify-between items-center px-4 font-semibold text-neutral-200 pb-1'>
                     <span>{title}</span>
                     <div className='flex gap-3 items-center'>
+
+                    <button
+                            
+                        >
+                            <Plus size={20}/>
+                        </button>
                         <AlertDialog>
                             <AlertDialogTrigger>
                                 <div>

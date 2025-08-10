@@ -95,10 +95,10 @@ export default function Dictionary({
                                 className='w-full flex justify-between'
                             >
                                 <div className='w-[calc(100%-36px)] flex justify-between items-center'>
-                                    <span className='text-neutral-200 text-lg'>
+                                    <span className='max-w-full text-neutral-200 text-lg text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>
                                         {item.front}
                                     </span>
-                                    <span className='text-neutral-300 text-lg'>
+                                    <span className='text-neutral-300 text-lg ml-5'>
                                         {areBacksVisible ? item.back : "∗∗∗∗∗"}
                                     </span>
                                 </div>

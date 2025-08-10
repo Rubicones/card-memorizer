@@ -13,6 +13,9 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
     title: "Memento",
     description: "Memorize things the most pure way",
+    icons: {
+        icon: "/favicon.svg",
+    },
 };
 
 export default function RootLayout({
@@ -23,7 +26,7 @@ export default function RootLayout({
     return (
         <html lang='en' className='dark'>
             <Head>
-                <link rel='icon' href='/favicon.svg' sizes='any' />
+                <link rel='icon' href='/favicon.svg' type='image/svg+xml' sizes='any' />{" "}
             </Head>
             <body className={`${montserrat.variable} antialiased`}>
                 <ReduxProvider>{children}</ReduxProvider>

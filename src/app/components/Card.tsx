@@ -115,13 +115,49 @@ export default function Card({
                 <div className='w-full relative z-0 '>
                     <span
                         ref={wordSpan}
-                        className='z-0  select-none text-4xl text-white hyphens-auto text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full'
+                        style={{
+                            fontSize:
+                                word && word.length > 30
+                                    ? "1.25rem"
+                                    : word && word.length > 20
+                                    ? "1.5rem"
+                                    : word && word.length > 12
+                                    ? "1.75rem"
+                                    : "2.25rem",
+                            lineHeight:
+                                word && word.length > 30
+                                    ? "1.2"
+                                    : word && word.length > 20
+                                    ? "1.1"
+                                    : word && word.length > 12
+                                    ? "1"
+                                    : "1",
+                        }}
+                        className='z-0 select-none text-white hyphens-auto text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-full overflow-hidden line-clamp-4'
                     >
                         {word}
                     </span>
                     <span
                         ref={translationSpan}
-                        className='z-0 temporarilyHidden select-none text-4xl text-white  hyphens-auto text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full'
+                        style={{
+                            fontSize:
+                                translation && translation.length > 30
+                                    ? "1.25rem"
+                                    : translation && translation.length > 20
+                                    ? "1.5rem"
+                                    : translation && translation.length > 12
+                                    ? "1.75rem"
+                                    : "2.25rem",
+                            lineHeight:
+                                translation && translation.length > 30
+                                    ? "1.2"
+                                    : translation && translation.length > 20
+                                    ? "1.1"
+                                    : translation && translation.length > 12
+                                    ? "1"
+                                    : "1",
+                        }}
+                        className='z-0 temporarilyHidden select-none text-white hyphens-auto text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-full overflow-hidden line-clamp-4'
                     >
                         {translation}
                     </span>

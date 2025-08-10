@@ -21,8 +21,11 @@ function Recall() {
 
     useEffect(() => {
         if (dictionary) {
-            setVocabulary(dictionariesStore[dictionary]);
-            setNewDictionary(dictionariesStore[dictionary]);
+            const sortedDictionary = [...dictionariesStore[dictionary]].sort(
+                (a, b) => b.priority - a.priority
+            );
+            setVocabulary(sortedDictionary);
+            setNewDictionary(sortedDictionary);
         }
     }, [dictionary]);
 
@@ -59,19 +62,15 @@ function Recall() {
                 },
                 {
                     opacity: 0,
-                    transform: "translateX(-120%) rotate(-40deg) ",
-                },
-                {
-                    opacity: 0,
-                    transform: "translateX(-200%) rotate(40deg) ",
+                    transform: "translateX(-200%) rotate(-40deg) ",
                 },
             ],
             {
                 duration: 300,
+                fill: "forwards",
             }
         );
         fadeAnimation!.onfinish = () => {
-            topWord.current!.style.opacity = "0";
             setVocabulary((prev) => {
                 const newVocabulary = [...prev.slice(0, prev.length - 1)];
                 if (newVocabulary.length === 0) {
@@ -105,20 +104,15 @@ function Recall() {
                 },
                 {
                     opacity: 0,
-                    transform: "translateX(120%) rotate(40deg) ",
-                },
-
-                {
-                    opacity: 0,
                     transform: "translateX(200%) rotate(40deg) ",
                 },
             ],
             {
                 duration: 300,
+                fill: "forwards",
             }
         );
         fadeAnimation.onfinish = () => {
-            topWord.current!.style.opacity = "0";
             setVocabulary((prev) => {
                 const newVocabulary = [...prev.slice(0, prev.length - 1)];
 

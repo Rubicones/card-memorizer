@@ -21,6 +21,7 @@ export default function Dictionary({
     title,
     onItemRemove,
     onDictionaryRemove,
+    onCardCreate,
 }: {
     items: {
         front: string;
@@ -29,6 +30,7 @@ export default function Dictionary({
     title: string;
     onItemRemove: (itemFront: string) => void;
     onDictionaryRemove: (dictionaryTitle: string) => void;
+    onCardCreate: () => void;
 }) {
     const [areBacksVisible, setAreBacksVisible] = useState(false);
     const router = useRouter();
@@ -40,11 +42,8 @@ export default function Dictionary({
                 <div className='w-full flex justify-between items-center px-4 font-semibold text-neutral-200 pb-1'>
                     <span>{title}</span>
                     <div className='flex gap-3 items-center'>
-
-                    <button
-                            
-                        >
-                            <Plus size={20}/>
+                        <button onClick={onCardCreate}>
+                            <Plus size={20} />
                         </button>
                         <AlertDialog>
                             <AlertDialogTrigger>

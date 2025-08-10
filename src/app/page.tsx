@@ -30,6 +30,8 @@ import axios from "axios";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { setDictionaries } from "@/lib/store/dictionariesStore";
 import { createClient } from "@supabase/supabase-js";
+import { toast } from "sonner";
+import SignInModal from "./components/SignInModal";
 
 const birthstone = Birthstone({
     variable: "--font-birthstone",
@@ -137,14 +139,6 @@ export default function Home() {
         if (localStorage) {
             if (!localStorage.getItem("sb-eecgcvumtskvsmesfbem-auth-token"))
                 setIsUserLoggedIn(false);
-
-            // setToken(
-            //     JSON.parse(
-            //         localStorage.getItem(
-            //             "sb-eecgcvumtskvsmesfbem-auth-token"
-            //         ) as string
-            //     ).access_token
-            // );
         }
     }, []);
 
@@ -173,7 +167,7 @@ export default function Home() {
                     </span>
                     {isLoading ? (
                         <LoaderCircle
-                            className='animate-spin self-center mt-20'
+                            className='animate-spin self-center'
                             size={80}
                         />
                     ) : (
@@ -196,7 +190,13 @@ export default function Home() {
                                             getDictionaries();
                                         });
                                     }}
-                                    onCard
+                                    onCardCreate={() => {
+                                        setAddNewCardDialogData((prev) => ({
+                                            ...prev,
+                                            isOpen: true,
+                                            dictionary: key,
+                                        }));
+                                    }}
                                     onDictionaryRemove={(title) => {
                                         const newDictionaries = {
                                             ...dictionariesStore,
@@ -288,10 +288,20 @@ export default function Home() {
                     <Dialog
                         open={addNewCardDialogData.isOpen}
                         onOpenChange={(state) => {
-                            setAddNewCardDialogData((prev) => ({
-                                ...prev,
-                                isOpen: state,
-                            }));
+                            if (!state) {
+                                setAddNewCardDialogData((prev) => ({
+                                    ...prev,
+                                    front: "",
+                                    back: "",
+                                    dictionary: "",
+                                    isOpen: false,
+                                }));
+                            } else {
+                                setAddNewCardDialogData((prev) => ({
+                                    ...prev,
+                                    isOpen: state,
+                                }));
+                            }
                         }}
                     >
                         <DialogTrigger>
@@ -335,6 +345,7 @@ export default function Home() {
                                                 dictionary: value,
                                             }));
                                         }}
+                                        value={addNewCardDialogData.dictionary}
                                     >
                                         <SelectTrigger className='w-full'>
                                             <SelectValue placeholder='Dictionary' />
@@ -363,6 +374,7 @@ export default function Home() {
                                                 front: e.target.value,
                                             }));
                                         }}
+                                        value={addNewCardDialogData.front}
                                     />
                                 </div>
                                 <div className='flex flex-col gap-2'>
@@ -375,6 +387,7 @@ export default function Home() {
                                                 back: e.target.value,
                                             }));
                                         }}
+                                        value={addNewCardDialogData.back}
                                     />
                                 </div>
                             </div>
@@ -424,157 +437,13 @@ export default function Home() {
                     </Dialog>
                 </div>
                 {!isUserLoggedIn && (
-                    <div className='fixed top-0 left-0 blur-3xl bg-neutral-900/50 w-screen h-screen z-30'>
-                        <Dialog
-                            defaultOpen={true}
-                            open={true}
-                            onOpenChange={() => {}}
-                        >
-                            {/* <DialogTrigger>Open</DialogTrigger> */}
-                            <DialogContent>
-                                <DialogHeader>
-                                    <DialogTitle>
-                                        {signUpDialogData.isLogIn
-                                            ? "Log In"
-                                            : "Sign Up"}
-                                    </DialogTitle>
-                                    <DialogDescription>
-                                        {signUpDialogData.isLogIn
-                                            ? "Please, enter your credentials to log in"
-                                            : `Seems like you are the new Memento user!
-                                        Let's make a quick sign up`}
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <div className='flex flex-col gap-4 py-4'>
-                                    <div className='flex flex-col gap-2'>
-                                        <Label className='text-right'>
-                                            E-mail
-                                        </Label>
-                                        <Input
-                                            className='col-span-3'
-                                            onChange={(e) => {
-                                                setSignUpDialogData((prev) => ({
-                                                    ...prev,
-                                                    email: e.target.value,
-                                                }));
-                                            }}
-                                        />
-                                    </div>
-                                    <div className='flex flex-col gap-2'>
-                                        <Label className='text-right'>
-                                            Password
-                                        </Label>
-                                        <Input
-                                            type='password'
-                                            className='col-span-3'
-                                            onChange={(e) => {
-                                                setSignUpDialogData((prev) => ({
-                                                    ...prev,
-                                                    password: e.target.value,
-                                                }));
-                                            }}
-                                        />
-                                    </div>
-                                    {!signUpDialogData.isLogIn && (
-                                        <div className='flex flex-col gap-2'>
-                                            <Label className='text-right'>
-                                                Password again
-                                            </Label>
-                                            <Input
-                                                type='password'
-                                                className='col-span-3'
-                                                onChange={(e) => {
-                                                    setSignUpDialogData(
-                                                        (prev) => ({
-                                                            ...prev,
-                                                            passwordAgain:
-                                                                e.target.value,
-                                                        })
-                                                    );
-                                                }}
-                                            />
-                                        </div>
-                                    )}
-                                    <Button
-                                        className='w-full text-md flex justify-center gap-2 items-center'
-                                        disabled={
-                                            signUpDialogData.isLoading ||
-                                            signUpDialogData.email.length == 0 || signUpDialogData.password
-                                            .length === 0 ||
-                                            (!signUpDialogData.isLogIn &&
-                                                signUpDialogData.password !==
-                                                    signUpDialogData.passwordAgain)
-                                        }
-                                        onClick={() => {
-                                            if (signUpDialogData.isLogIn) {
-                                                supabase.auth
-                                                    .signInWithPassword({
-                                                        email: signUpDialogData.email,
-                                                        password:
-                                                            signUpDialogData.password,
-                                                    })
-                                                    .then((res) => {
-                                                        console.log(res);
-                                                        setIsUserLoggedIn(true);
-                                                        getDictionaries();
-                                                    });
-                                            } else {
-                                                supabase.auth
-                                                    .signUp({
-                                                        email: signUpDialogData.email,
-                                                        password:
-                                                            signUpDialogData.password,
-                                                    })
-                                                    .then((res) => {
-                                                        console.log(res);
-                                                        setIsUserLoggedIn(true);
-                                                        getDictionaries();
-                                                    });
-                                            }
-                                        }}
-                                    >
-                                        {(() => {
-                                            switch (true) {
-                                                case signUpDialogData.isLoading:
-                                                    return (
-                                                        <LoaderCircle className='animate-spin' />
-                                                    );
-                                                case signUpDialogData.isLogIn:
-                                                    return "Log In";
-                                                default:
-                                                    return "Sign Up";
-                                            }
-                                        })()}
-                                    </Button>
-                                    {!signUpDialogData.isLogIn ? (
-                                        <button
-                                            className='text-neutral-400 underline'
-                                            onClick={() => {
-                                                setSignUpDialogData((prev) => ({
-                                                    ...prev,
-                                                    isLogIn: !prev.isLogIn,
-                                                }));
-                                            }}
-                                        >
-                                            I already have an account
-                                        </button>
-                                    ) : (
-                                        <button
-                                            className='text-neutral-400 underline'
-                                            onClick={() => {
-                                                setSignUpDialogData((prev) => ({
-                                                    ...prev,
-                                                    isLogIn: !prev.isLogIn,
-                                                }));
-                                            }}
-                                        >
-                                            I am a new Memento user
-                                        </button>
-                                    )}
-                                </div>
-                            </DialogContent>
-                        </Dialog>
-                    </div>
+                    <SignInModal
+                        onSignIn={() => {
+                            setIsUserLoggedIn(true);
+                            getDictionaries();
+                        }}
+                        supabaseClient={supabase}
+                    />
                 )}
             </div>
         </>

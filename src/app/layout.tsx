@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import { ReduxProvider } from "@/lib/store/provider";
+import { Toaster } from "@/components/ui/sonner"
 
 import "./globals.css";
 
@@ -23,6 +24,7 @@ export default function RootLayout({
         <html lang='en' className='dark'>
             <body className={`${montserrat.variable} antialiased`}>
                 <ReduxProvider>{children}</ReduxProvider>
+                <Toaster />
             </body>
         </html>
     );

@@ -131,7 +131,7 @@ export default function Card({
                                     ? "1.1"
                                     : word && word.length > 12
                                     ? "1"
-                                    : "1",
+                                    : "1.2",
                         }}
                         className='z-0 select-none text-white hyphens-auto text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-full overflow-hidden line-clamp-4'
                     >

@@ -55,7 +55,10 @@ export interface Card {
     priority: number;
 }
 export interface Dictionaries {
-    [key: string]: Card[];
+    [key: string]: {
+        dictionary: Card[];
+        repeatCount: number;
+    };
 }
 
 export default function Home() {
@@ -171,19 +174,22 @@ export default function Home() {
                             (key: string, index) => (
                                 <Dictionary
                                     key={index}
-                                    items={dictionariesStore[key]}
+                                    items={dictionariesStore[key].dictionary}
                                     title={key}
                                     onSwitchBacksAndFronts={() => {
                                         const newItems = dictionariesStore[
                                             key
-                                        ].map((item) => ({
+                                        ].dictionary.map((item) => ({
                                             ...item,
                                             front: item.back,
                                             back: item.front,
                                         }));
                                         const newDictionaries = {
                                             ...dictionariesStore,
-                                            [key]: newItems,
+                                            [key]: {
+                                                dictionary: newItems,
+                                                repeatCount: dictionariesStore[key].repeatCount,
+                                            },
                                         };
                                         dispatch(
                                             setDictionaries(newDictionaries)
@@ -197,12 +203,15 @@ export default function Home() {
                                     onItemRemove={(itemFront) => {
                                         const newItems = dictionariesStore[
                                             key
-                                        ].filter(
+                                        ].dictionary.filter(
                                             (item) => item.front !== itemFront
                                         );
                                         const newDictionaries = {
                                             ...dictionariesStore,
-                                            [key]: newItems,
+                                            [key]: {
+                                                dictionary: newItems,
+                                                repeatCount: dictionariesStore[key].repeatCount,
+                                            },
                                         };
                                         dispatch(
                                             setDictionaries(newDictionaries)
@@ -214,7 +223,7 @@ export default function Home() {
                                                     "Word removed from the dictionary"
                                                 );
                                             })
-                                            .catch((err) => {
+                                            .catch(() => {
                                                 toast.error(
                                                     "Something went wrong while removing the word from the dictionary"
                                                 );
@@ -238,6 +247,7 @@ export default function Home() {
                                             getDictionaries();
                                         });
                                     }}
+                                    repeatCount={dictionariesStore[key].repeatCount}
                                 />
                             )
                         )
@@ -268,7 +278,10 @@ export default function Home() {
                                                 updateDictionaries({
                                                     ...dictionariesStore,
                                                     [createNewDictionaryDialogData.name]:
-                                                        [],
+                                                        {
+                                                            dictionary: [],
+                                                            repeatCount: 0,
+                                                        },
                                                 }).then(() => {
                                                     getDictionaries();
                                                 });
@@ -433,26 +446,26 @@ export default function Home() {
                                     }
                                     className='w-full text-md flex justify-center gap-2 items-center'
                                     onClick={() => {
-                                        const newVocabulary = {
+                                        const updatedDictionaries = {
                                             ...dictionariesStore,
-                                            [addNewCardDialogData.dictionary]: [
-                                                ...dictionariesStore[
-                                                    addNewCardDialogData
-                                                        .dictionary
+                                            [addNewCardDialogData.dictionary]: {
+                                                ...dictionariesStore[addNewCardDialogData.dictionary],
+                                                dictionary: [
+                                                    ...dictionariesStore[addNewCardDialogData.dictionary].dictionary,
+                                                    {
+                                                        front: addNewCardDialogData.front,
+                                                        back: addNewCardDialogData.back,
+                                                        priority: 1,
+                                                    },
                                                 ],
-                                                {
-                                                    front: addNewCardDialogData.front,
-                                                    back: addNewCardDialogData.back,
-                                                    priority: 1,
-                                                },
-                                            ],
+                                            },
                                         };
 
                                         dispatch(
-                                            setDictionaries(newVocabulary)
+                                            setDictionaries(updatedDictionaries)
                                         );
 
-                                        updateDictionaries(newVocabulary).then(
+                                        updateDictionaries(updatedDictionaries).then(
                                             () => {
                                                 getDictionaries();
                                             }

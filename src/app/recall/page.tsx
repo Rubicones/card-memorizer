@@ -9,6 +9,12 @@ import { Card as CardItem } from "../page";
 import { useAppSelector } from "@/lib/store/hooks";
 import { CheckIcon } from "@/components/ui/check";
 import { updateDictionaries } from "@/lib/utils";
+import { 
+    selectCardsForExamination, 
+    updateCardPriority, 
+    calculateNextRepeatCount
+} from "@/lib/leitner";
+import LeitnerStats from "../components/LeitnerStats";
 
 function Recall() {
     const rememberBtn = useRef<HTMLButtonElement>(null);
@@ -17,17 +23,26 @@ function Recall() {
     const router = useRouter();
     const params = useSearchParams();
     const dictionary = params?.get("dictionary");
+    const repeatCount = params?.get("repeatCount");
     const dictionariesStore = useAppSelector((state) => state.dictionaries);
 
     useEffect(() => {
-        if (dictionary) {
-            const sortedDictionary = [...dictionariesStore[dictionary]].sort(
-                (a, b) => b.priority - a.priority
+        if (dictionary && repeatCount) {
+            if (!dictionariesStore[dictionary]) {
+                router.push("/");
+                return;
+            }
+
+            // Use the Leitner system to select cards for this examination
+            const selectedCards = selectCardsForExamination(
+                dictionariesStore[dictionary].dictionary,
+                +repeatCount
             );
-            setVocabulary(sortedDictionary);
-            setNewDictionary(sortedDictionary);
+            
+            setVocabulary(selectedCards);
+            setNewDictionary(dictionariesStore[dictionary].dictionary);
         }
-    }, [dictionary]);
+    }, [dictionary, repeatCount]);
 
     const [vocabulary, setVocabulary] = useState<CardItem[]>([]);
     const [isTranslation, setIsTranslation] = useState(false);
@@ -36,13 +51,8 @@ function Recall() {
     const getUpdatedDictionary = (side: "lose" | "win") => {
         return newDictionary.map((item) => {
             if (item.front === vocabulary[vocabulary.length - 1].front) {
-                return {
-                    ...item,
-                    priority:
-                        side === "win"
-                            ? item.priority + 0.01
-                            : item.priority - 0.01,
-                };
+                // Use the Leitner system to update card priority
+                return updateCardPriority(item, side === "win");
             }
             return item;
         });
@@ -74,9 +84,15 @@ function Recall() {
             setVocabulary((prev) => {
                 const newVocabulary = [...prev.slice(0, prev.length - 1)];
                 if (newVocabulary.length === 0) {
+                    // Use the Leitner system to calculate the next repeatCount
+                    const nextRepeatCount = calculateNextRepeatCount(Number(repeatCount));
+                    
                     updateDictionaries({
                         ...dictionariesStore,
-                        [dictionary as string]: getUpdatedDictionary("win"),
+                        [dictionary as string]: {
+                            dictionary: getUpdatedDictionary("win"),
+                            repeatCount: nextRepeatCount,
+                        },
                     })
                         .then(() => {
                             return new Promise((res) => setTimeout(res, 400));
@@ -117,9 +133,15 @@ function Recall() {
                 const newVocabulary = [...prev.slice(0, prev.length - 1)];
 
                 if (newVocabulary.length === 0) {
+                    // Use the Leitner system to calculate the next repeatCount
+                    const nextRepeatCount = calculateNextRepeatCount(Number(repeatCount));
+                    
                     updateDictionaries({
                         ...dictionariesStore,
-                        [dictionary as string]: getUpdatedDictionary("lose"),
+                        [dictionary as string]: {
+                            dictionary: getUpdatedDictionary("lose"),
+                            repeatCount: nextRepeatCount,
+                        },
                     })
                         .then(() => {
                             return new Promise((res) => setTimeout(res, 400));
@@ -161,6 +183,16 @@ function Recall() {
         <>
             <Suspense>
                 <div className='w-screen h-screen flex justify-center items-center relative overflow-hidden '>
+                    {/* Leitner Stats Display */}
+                    {/* {dictionary && repeatCount && dictionariesStore[dictionary] && (
+                        <div className="absolute top-4 right-4 z-10">
+                            <LeitnerStats 
+                                dictionary={dictionariesStore[dictionary].dictionary}
+                                repeatCount={+repeatCount}
+                            />
+                        </div>
+                    )} */}
+                    
                     <button
                         ref={rememberBtn}
                         className='peer/accept border-2 rounded-full size-16 border-white bottom-1/4 left-[calc(50%-32px-64px-16px)] absolute flex items-center justify-center'

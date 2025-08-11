@@ -1,6 +1,47 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* PWA App Mode Styles */
+@media (display-mode: standalone) {
+    body {
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+        -webkit-tap-highlight-color: transparent;
+        overscroll-behavior: none;
+    }
+    
+    /* Hide browser UI elements */
+    html {
+        overflow: hidden;
+        height: 100vh;
+        height: 100dvh; /* Dynamic viewport height for mobile */
+    }
+    
+    body {
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden;
+        position: fixed;
+        width: 100%;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Ensure content takes full screen */
+    #__next, [data-nextjs-page] {
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden;
+    }
+}
+
+/* Prevent zoom on mobile */
+@media (max-width: 768px) {
+    body {
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+    }
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

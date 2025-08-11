@@ -105,6 +105,21 @@ export default function RootLayout({
         <html lang='en' className='dark'>
             <head>
                 <link rel="manifest" href="/manifest.json" />
+                <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+                <link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any" />
+                <meta name="mobile-web-app-capable" content="yes" />
+                <meta name="apple-mobile-web-app-capable" content="yes" />
+                <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+                <meta name="apple-mobile-web-app-title" content="Memento" />
+                <meta name="application-name" content="Memento" />
+                <meta name="msapplication-TileColor" content="#000000" />
+                <meta name="msapplication-config" content="/browserconfig.xml" />
+                <meta name="theme-color" content="#000000" />
+                <meta name="msapplication-navbutton-color" content="#000000" />
+                <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+                <meta name="format-detection" content="telephone=no" />
+                <meta name="msapplication-tap-highlight" content="no" />
             </head>
             <body className={`${montserrat.variable} antialiased`}>
                 <ReduxProvider>{children}</ReduxProvider>

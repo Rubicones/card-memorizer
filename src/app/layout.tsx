@@ -103,7 +103,9 @@ export default function RootLayout({
 }>) {
     return (
         <html lang='en' className='dark'>
-
+            <head>
+                <link rel="manifest" href="/manifest.json" />
+            </head>
             <body className={`${montserrat.variable} antialiased`}>
                 <ReduxProvider>{children}</ReduxProvider>
                 <Toaster />

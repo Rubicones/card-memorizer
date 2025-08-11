@@ -1,7 +1,7 @@
 
 # Memento – Memorize things the most pure way
 
-Memento is the minimal flashcard app that implements the Leitner spaced-repetition system. Create cards and review them to memorize faster. Nothing will disturb you from the main point.
+Memento is the minimal flashcard app that utilizes the Leitner spaced-repetition system. Create cards and review them to memorize faster. Nothing will disturb you from the main point.
 
 # How to use it:
 

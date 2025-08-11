@@ -106,8 +106,8 @@ export default function Home() {
             })
             .catch((err) => {
                 if (err.response.data.error === "Invalid or expired token") {
-                    setIsUserLoggedIn(false);
-                    localStorage.clear();
+                    // setIsUserLoggedIn(false);
+                    // localStorage.clear();
                 }
             })
             .finally(() => {

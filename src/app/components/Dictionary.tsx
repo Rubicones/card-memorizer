@@ -103,7 +103,7 @@ export default function Dictionary({
                                     <span className='max-w-full text-neutral-200 text-lg text-nowrap whitespace-nowrap overflow-hidden text-ellipsis'>
                                         {item.front}
                                     </span>
-                                    <span className='text-neutral-300 text-lg ml-5'>
+                                    <span className='text-neutral-300 text-lg ml-5 text-nowrap overflow-hidden text-ellipsis'>
                                         {areBacksVisible ? item.back : "∗∗∗∗∗"}
                                     </span>
                                 </div>

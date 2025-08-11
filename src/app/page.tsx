@@ -32,6 +32,7 @@ import { setDictionaries } from "@/lib/store/dictionariesStore";
 import { createClient } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import SignInModal from "./components/SignInModal";
+import PWAInstall from "@/components/PWAInstall";
 
 const birthstone = Birthstone({
     variable: "--font-birthstone",
@@ -528,6 +529,7 @@ export default function Home() {
                     />
                 )}
             </div>
+            <PWAInstall />
         </>
     );
 }

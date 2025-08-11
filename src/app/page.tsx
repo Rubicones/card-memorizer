@@ -77,13 +77,6 @@ export default function Home() {
         rotationDirection: useRef(Math.random() > 0.5 ? "-" : ""),
         isOpen: false,
     });
-    const [signUpDialogData, setSignUpDialogData] = useState({
-        email: "",
-        password: "",
-        passwordAgain: "",
-        isLogIn: false,
-        isLoading: false,
-    });
     const [createNewDictionaryDialogData, setCreateNewDictionaryDialogData] =
         useState({
             name: "",
@@ -113,10 +106,6 @@ export default function Home() {
             })
             .catch((err) => {
                 if (err.response.data.error === "Invalid or expired token") {
-                    setSignUpDialogData((prev) => ({
-                        ...prev,
-                        isLogIn: true,
-                    }));
                     setIsUserLoggedIn(false);
                     localStorage.clear();
                 }
@@ -168,6 +157,7 @@ export default function Home() {
                     {isLoading ? (
                         <LoaderCircle
                             className='animate-spin self-center'
+                            strokeWidth={1}
                             size={80}
                         />
                     ) : (
@@ -177,18 +167,52 @@ export default function Home() {
                                     key={index}
                                     items={dictionariesStore[key]}
                                     title={key}
+                                    onSwitchBacksAndFronts={() => {
+                                        const newItems = dictionariesStore[
+                                            key
+                                        ].map((item) => ({
+                                            ...item,
+                                            front: item.back,
+                                            back: item.front,
+                                        }));
+                                        const newDictionaries = {
+                                            ...dictionariesStore,
+                                            [key]: newItems,
+                                        };
+                                        dispatch(
+                                            setDictionaries(newDictionaries)
+                                        );
+                                        updateDictionaries(
+                                            newDictionaries
+                                        ).then(() => {
+                                            getDictionaries();
+                                        });
+                                    }}
                                     onItemRemove={(itemFront) => {
                                         const newItems = dictionariesStore[
                                             key
                                         ].filter(
                                             (item) => item.front !== itemFront
                                         );
-                                        updateDictionaries({
+                                        const newDictionaries = {
                                             ...dictionariesStore,
                                             [key]: newItems,
-                                        }).then(() => {
-                                            getDictionaries();
-                                        });
+                                        };
+                                        dispatch(
+                                            setDictionaries(newDictionaries)
+                                        );
+                                        updateDictionaries(newDictionaries)
+                                            .then(() => {
+                                                getDictionaries();
+                                                toast.success(
+                                                    "Word removed from the dictionary"
+                                                );
+                                            })
+                                            .catch((err) => {
+                                                toast.error(
+                                                    "Something went wrong while removing the word from the dictionary"
+                                                );
+                                            });
                                     }}
                                     onCardCreate={() => {
                                         setAddNewCardDialogData((prev) => ({
@@ -404,23 +428,29 @@ export default function Home() {
                                     className='w-full text-md flex justify-center gap-2 items-center'
                                     onClick={() => {
                                         const newVocabulary = {
-                                            front: addNewCardDialogData.front,
-                                            back: addNewCardDialogData.back,
-                                            priority: 1,
-                                        };
-
-                                        updateDictionaries({
                                             ...dictionariesStore,
                                             [addNewCardDialogData.dictionary]: [
                                                 ...dictionariesStore[
                                                     addNewCardDialogData
                                                         .dictionary
                                                 ],
-                                                newVocabulary,
+                                                {
+                                                    front: addNewCardDialogData.front,
+                                                    back: addNewCardDialogData.back,
+                                                    priority: 1,
+                                                },
                                             ],
-                                        }).then(() => {
-                                            getDictionaries();
-                                        });
+                                        };
+
+                                        dispatch(
+                                            setDictionaries(newVocabulary)
+                                        );
+
+                                        updateDictionaries(newVocabulary).then(
+                                            () => {
+                                                getDictionaries();
+                                            }
+                                        );
 
                                         setAddNewCardDialogData((prev) => ({
                                             ...prev,

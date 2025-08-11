@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, EyeClosed, Play, Plus, Trash } from "lucide-react";
+import { ArrowLeftRight, Eye, EyeClosed, Play, Plus, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import {
@@ -22,6 +22,7 @@ export default function Dictionary({
     onItemRemove,
     onDictionaryRemove,
     onCardCreate,
+    onSwitchBacksAndFronts,
 }: {
     items: {
         front: string;
@@ -31,6 +32,7 @@ export default function Dictionary({
     onItemRemove: (itemFront: string) => void;
     onDictionaryRemove: (dictionaryTitle: string) => void;
     onCardCreate: () => void;
+    onSwitchBacksAndFronts: () => void;
 }) {
     const [areBacksVisible, setAreBacksVisible] = useState(false);
     const router = useRouter();
@@ -42,6 +44,9 @@ export default function Dictionary({
                 <div className='w-full flex justify-between items-center px-4 font-semibold text-neutral-200 pb-1'>
                     <span>{title}</span>
                     <div className='flex gap-3 items-center'>
+                        <button onClick={onSwitchBacksAndFronts}>
+                            <ArrowLeftRight size={20} />
+                        </button>
                         <button onClick={onCardCreate}>
                             <Plus size={20} />
                         </button>

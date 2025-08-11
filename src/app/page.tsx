@@ -104,10 +104,16 @@ export default function Home() {
             .then((res) => {
                 dispatch(setDictionaries(res.data.data));
             })
-            .catch((err) => {
+            .catch(async (err) => {
                 if (err.response.data.error === "Invalid or expired token") {
-                    // setIsUserLoggedIn(false);
-                    // localStorage.clear();
+                    try {
+                        await supabase.auth.refreshSession();
+                        getDictionaries();
+                    } catch {
+                        setIsUserLoggedIn(false);
+                        localStorage.clear();
+                        location.reload();
+                    }
                 }
             })
             .finally(() => {
@@ -143,7 +149,7 @@ export default function Home() {
                         imperialScript.variable,
                         birthstone.variable,
                         tangerine.variable,
-                        "w-full max-w-[600px] flex flex-col justify-start items-start relative overflow-hidden no-scrollbar overflow-y-scroll overscroll-contain p-6"
+                        "w-full max-w-[600px] flex flex-col justify-start items-start relative overflow-hidden no-scrollbar overscroll-contain p-6"
                     )}
                 >
                     <span className={`birthstone-regular text-white text-6xl`}>

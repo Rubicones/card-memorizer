@@ -32,6 +32,35 @@
         height: 100dvh;
         overflow: hidden;
     }
+    
+    /* Hide browser address bar and UI elements */
+    @media screen and (display-mode: standalone) {
+        /* Hide browser chrome */
+        header, nav, .browser-chrome {
+            display: none !important;
+        }
+        
+        /* Ensure full screen */
+        body {
+            padding-top: 0 !important;
+            margin-top: 0 !important;
+        }
+    }
+}
+
+/* Additional PWA styles for all modes */
+html {
+    /* Prevent browser UI from showing */
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+}
+
+body {
+    /* Ensure app takes full screen */
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    min-height: 100dvh;
 }
 
 /* Prevent zoom on mobile */

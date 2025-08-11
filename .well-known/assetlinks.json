@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.vercel.memento_cards.twa",
+        "sha256_cert_fingerprints": ["A4:FE:25:2B:51:A9:C6:01:1D:27:6B:4E:42:9C:80:6B:CA:0C:C5:91:9F:B7:21:48:12:18:24:26:D6:55:49:E0"]
+      }
+    }]

@@ -3,7 +3,6 @@ import { Montserrat } from "next/font/google";
 import { ReduxProvider } from "@/lib/store/provider";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
-import Head from "next/head";
 
 const montserrat = Montserrat({
     variable: "--font-montserrat",
@@ -11,8 +10,45 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-    title: "Memento",
-    description: "Memorize things the most pure way using spaced repetition",
+    title: "Memento - Card Learning App",
+    description: "Memorize things the most pure way using spaced repetition. A powerful flashcard app with offline support and spaced repetition learning.",
+    keywords: ["flashcards", "memorization", "spaced repetition", "learning", "study", "education", "pwa"],
+    authors: [{ name: "Memento Team" }],
+    creator: "Memento",
+    publisher: "Memento",
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            'max-video-preview': -1,
+            'max-image-preview': 'large',
+            'max-snippet': -1,
+        },
+    },
+    openGraph: {
+        title: "Memento - Card Learning App",
+        description: "Memorize things the most pure way using spaced repetition",
+        url: "https://memento-app.com",
+        siteName: "Memento",
+        images: [
+            {
+                url: "/icons/icon-512x512.png",
+                width: 512,
+                height: 512,
+                alt: "Memento App Icon",
+            },
+        ],
+        locale: "en_US",
+        type: "website",
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Memento - Card Learning App",
+        description: "Memorize things the most pure way using spaced repetition",
+        images: ["/icons/icon-512x512.png"],
+    },
     manifest: "/manifest.json",
     icons: {
         icon: [
@@ -67,17 +103,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang='en' className='dark'>
-            <Head>
-                <link rel='icon' href='/favicon.svg' type='image/svg+xml' sizes='any' />
-                <link rel="manifest" href="/manifest.json" />
-                <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
-                <meta name="apple-mobile-web-app-capable" content="yes" />
-                <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-                <meta name="apple-mobile-web-app-title" content="Memento" />
-                <meta name="mobile-web-app-capable" content="yes" />
-                <meta name="theme-color" content="#000000" />
-                <meta name="msapplication-TileColor" content="#000000" />
-            </Head>
+
             <body className={`${montserrat.variable} antialiased`}>
                 <ReduxProvider>{children}</ReduxProvider>
                 <Toaster />

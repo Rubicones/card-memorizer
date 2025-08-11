@@ -127,15 +127,6 @@ export default function Home() {
 
     useEffect(() => {
         if (localStorage) {
-            localStorage.setItem(
-                "dictionaries",
-                JSON.stringify(dictionariesStore)
-            );
-        }
-    }, [dictionariesStore]);
-
-    useEffect(() => {
-        if (localStorage) {
             if (!localStorage.getItem("sb-eecgcvumtskvsmesfbem-auth-token"))
                 setIsUserLoggedIn(false);
         }

@@ -5,7 +5,6 @@
   "description": "Memorize things the most pure way using spaced repetition. A powerful flashcard app with offline support and spaced repetition learning.",
   "start_url": "/",
   "display": "standalone",
-  "display_override": ["standalone"],
   "background_color": "#000000",
   "theme_color": "#000000",
   "orientation": "portrait-primary",
@@ -20,8 +19,6 @@
   "edge_side_panel": {
     "preferred_width": 400
   },
-  "prefer_related_applications": false,
-  "related_applications": [],
   "screenshots": [
     {
       "src": "/icons/icon-512x512.png",

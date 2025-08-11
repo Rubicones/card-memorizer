@@ -188,7 +188,9 @@ export default function Home() {
                                             ...dictionariesStore,
                                             [key]: {
                                                 dictionary: newItems,
-                                                repeatCount: dictionariesStore[key].repeatCount,
+                                                repeatCount:
+                                                    dictionariesStore[key]
+                                                        .repeatCount,
                                             },
                                         };
                                         dispatch(
@@ -210,7 +212,9 @@ export default function Home() {
                                             ...dictionariesStore,
                                             [key]: {
                                                 dictionary: newItems,
-                                                repeatCount: dictionariesStore[key].repeatCount,
+                                                repeatCount:
+                                                    dictionariesStore[key]
+                                                        .repeatCount,
                                             },
                                         };
                                         dispatch(
@@ -247,7 +251,9 @@ export default function Home() {
                                             getDictionaries();
                                         });
                                     }}
-                                    repeatCount={dictionariesStore[key].repeatCount}
+                                    repeatCount={
+                                        dictionariesStore[key].repeatCount
+                                    }
                                 />
                             )
                         )
@@ -275,6 +281,27 @@ export default function Home() {
                                         <button
                                             className='absolute right-10 top-8'
                                             onClick={() => {
+                                                if (
+                                                    !createNewDictionaryDialogData
+                                                        .name.length
+                                                ) {
+                                                    toast.error(
+                                                        "Please enter a name for the dictionary"
+                                                    );
+                                                    return;
+                                                }
+                                                if (
+                                                    Object.keys(
+                                                        dictionariesStore
+                                                    ).includes(
+                                                        createNewDictionaryDialogData.name
+                                                    )
+                                                ) {
+                                                    toast.error(
+                                                        "Dictionary with this name already exists"
+                                                    );
+                                                    return;
+                                                }
                                                 updateDictionaries({
                                                     ...dictionariesStore,
                                                     [createNewDictionaryDialogData.name]:
@@ -449,9 +476,15 @@ export default function Home() {
                                         const updatedDictionaries = {
                                             ...dictionariesStore,
                                             [addNewCardDialogData.dictionary]: {
-                                                ...dictionariesStore[addNewCardDialogData.dictionary],
+                                                ...dictionariesStore[
+                                                    addNewCardDialogData
+                                                        .dictionary
+                                                ],
                                                 dictionary: [
-                                                    ...dictionariesStore[addNewCardDialogData.dictionary].dictionary,
+                                                    ...dictionariesStore[
+                                                        addNewCardDialogData
+                                                            .dictionary
+                                                    ].dictionary,
                                                     {
                                                         front: addNewCardDialogData.front,
                                                         back: addNewCardDialogData.back,
@@ -465,11 +498,11 @@ export default function Home() {
                                             setDictionaries(updatedDictionaries)
                                         );
 
-                                        updateDictionaries(updatedDictionaries).then(
-                                            () => {
-                                                getDictionaries();
-                                            }
-                                        );
+                                        updateDictionaries(
+                                            updatedDictionaries
+                                        ).then(() => {
+                                            getDictionaries();
+                                        });
 
                                         setAddNewCardDialogData((prev) => ({
                                             ...prev,

@@ -52,10 +52,10 @@ export default function Dictionary({
                 className={`mt-6 m-2 w-full border-2 rounded-md border-neutral-500 self-center flex flex-col py-1`}
             >
                 <div className='w-full flex justify-between items-center px-4 font-semibold text-neutral-200 pb-1'>
-                    <div className='flex flex-col px-px'>
+                    <div className='flex flex-col'>
                         <span>{title}</span>
-                        <span className='text-white text-[2rem] font-bold text-nowrap leading-[0.4] -translate-y-1'>
-                            {"·".repeat((repeatCount % 5) + 1)}
+                        <span className='text-neutral-400 text-sm'>
+                            Repeated {repeatCount} times
                         </span>
                     </div>
 
@@ -161,7 +161,7 @@ export default function Dictionary({
                 }}
             >
                 <Play fill={"black"} className='size-3' />
-                <span>Start examination</span>
+                <span>Start examination #{repeatCount + 1}</span>
             </Button>
         </>
     );

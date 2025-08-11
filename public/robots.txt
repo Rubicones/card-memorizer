@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://memento-app.com/sitemap.xml
+
+# Allow all crawlers to index the site
+Disallow: /api/
+Disallow: /_next/
+Disallow: /sw.js
+
+# Allow PWA assets
+Allow: /manifest.json
+Allow: /icons/
+Allow: /favicon.svg

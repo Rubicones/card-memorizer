@@ -119,7 +119,7 @@ export default function RootLayout({
             <body className={`${montserrat.variable} antialiased`}>
                 <ReduxProvider>{children}</ReduxProvider>
                 <Toaster />
-                {process.env.NODE_ENV === "production" && (
+                {/* {process.env.NODE_ENV === "production" && (
                 <script
                     dangerouslySetInnerHTML={{
                         __html: `
@@ -137,7 +137,7 @@ export default function RootLayout({
                         `,
                             }}
                     />
-                )}
+                )} */}
             </body>
         </html>
     );

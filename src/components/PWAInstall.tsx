@@ -8,21 +8,46 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
+const DISMISS_KEY = "pwa-install-dismissed-at";
+const INSTALLED_KEY = "pwa-installed";
+
 export default function PWAInstall() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
+  const [isInstalled, setIsInstalled] = useState(false);
 
   useEffect(() => {
+    const wasInstalled = window.localStorage.getItem(INSTALLED_KEY) === "1";
+    setIsInstalled(wasInstalled);
+
+    const recentlyDismissed = (() => {
+      const dismissedAt = window.localStorage.getItem(DISMISS_KEY);
+      if (!dismissedAt) return false;
+      const msSinceDismiss = Date.now() - Number(dismissedAt);
+      const fourteenDaysMs = 14 * 24 * 60 * 60 * 1000;
+      return msSinceDismiss < fourteenDaysMs;
+    })();
+
     const handler = (e: Event) => {
+      // Defer the browser prompt until the user clicks our button
       e.preventDefault();
+      if (wasInstalled || recentlyDismissed) return;
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       setShowInstallPrompt(true);
     };
 
+    const onInstalled = () => {
+      window.localStorage.setItem(INSTALLED_KEY, "1");
+      setIsInstalled(true);
+      setShowInstallPrompt(false);
+    };
+
     window.addEventListener("beforeinstallprompt", handler);
+    window.addEventListener("appinstalled", onInstalled as EventListener);
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handler);
+      window.removeEventListener("appinstalled", onInstalled as EventListener);
     };
   }, []);
 
@@ -33,10 +58,9 @@ export default function PWAInstall() {
     const { outcome } = await deferredPrompt.userChoice;
 
     if (outcome === "accepted") {
-      console.log("User accepted the install prompt");
+      window.localStorage.setItem(INSTALLED_KEY, "1");
       setShowInstallPrompt(false);
-    } else {
-      console.log("User dismissed the install prompt");
+      setIsInstalled(true);
     }
 
     setDeferredPrompt(null);
@@ -45,35 +69,37 @@ export default function PWAInstall() {
   const handleDismiss = () => {
     setShowInstallPrompt(false);
     setDeferredPrompt(null);
+    try {
+      window.localStorage.setItem(DISMISS_KEY, String(Date.now()));
+    } catch {}
   };
 
-  if (!showInstallPrompt) return null;
+  if (!showInstallPrompt || isInstalled) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 bg-black border border-gray-700 rounded-lg p-4 shadow-lg z-50">
-      <div className="flex items-center justify-between">
+    <div className="fixed inset-x-0 bottom-3 z-50 px-6">
+      <div className="mx-auto max-w-[560px] bg-background/95 backdrop-blur border border-border text-foreground rounded-md shadow-sm px-3 py-2 w-full">
         <div className="flex items-center gap-3">
-          <Download className="w-6 h-6 text-blue-400" />
-          <div>
-            <h3 className="font-semibold text-white">Install Memento</h3>
-            <p className="text-sm text-gray-400">
-              Add to home screen for quick access
-            </p>
+          <Download className="w-4 h-4 text-foreground/70" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium leading-none truncate">Install Memento</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Add to your home screen</p>
           </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handleInstallClick}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-          >
-            Install
-          </button>
-          <button
-            onClick={handleDismiss}
-            className="text-gray-400 hover:text-white transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={handleInstallClick}
+              className="h-8 px-3 rounded-md border border-border text-sm text-foreground hover:bg-foreground/10 transition-colors"
+            >
+              Install
+            </button>
+            <button
+              onClick={handleDismiss}
+              aria-label="Dismiss"
+              className="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-foreground/10 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
     </div>

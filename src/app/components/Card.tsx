@@ -128,12 +128,18 @@ export default function Card({
                                 word && word.length > 30
                                     ? "1.2"
                                     : word && word.length > 20
-                                    ? "1.1"
-                                    : word && word.length > 12
-                                    ? "1"
-                                    : "1.3",
+                                    ? "1.3"
+                                    : "1.4",
                         }}
-                        className='z-0 select-none text-white hyphens-auto text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-full overflow-hidden line-clamp-4'
+                        className={cn(
+                            "z-0 select-none text-white hyphens-auto text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-full overflow-hidden line-clamp-4",
+                            word
+                                .split(" ")
+                                .map((word) => word.length)
+                                .filter((length) => length > 20).length > 0
+                                ? "whitespace-normal break-all"
+                                : ""
+                        )}
                     >
                         {word}
                     </span>
@@ -141,21 +147,19 @@ export default function Card({
                         ref={translationSpan}
                         style={{
                             fontSize:
-                                translation && translation.length > 30
+                                word && word.length > 30
                                     ? "1.25rem"
-                                    : translation && translation.length > 20
+                                    : word && word.length > 20
                                     ? "1.5rem"
-                                    : translation && translation.length > 12
+                                    : word && word.length > 12
                                     ? "1.75rem"
                                     : "2.25rem",
                             lineHeight:
-                                translation && translation.length > 30
+                                word && word.length > 30
                                     ? "1.2"
-                                    : translation && translation.length > 20
-                                    ? "1.1"
-                                    : translation && translation.length > 12
-                                    ? "1"
-                                    : "1",
+                                    : word && word.length > 20
+                                    ? "1.3"
+                                    : "1.4",
                         }}
                         className='z-0 temporarilyHidden select-none text-white hyphens-auto text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-full overflow-hidden line-clamp-4'
                     >

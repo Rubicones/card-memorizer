@@ -147,11 +147,11 @@ export default function Home() {
                         "w-full max-w-[600px] flex flex-col justify-start items-start relative overflow-hidden no-scrollbar overscroll-contain p-6"
                     )}
                 >
-                    <span className={`birthstone-regular text-white text-6xl`}>
+                    <span className={`birthstone-regular text-white text-4xl md:text-6xl w-full text-center`}>
                         Memento
                     </span>
                     <span
-                        className={`birthstone-regular text-neutral-300 text-4xl -translate-y-4`}
+                        className={`birthstone-regular text-neutral-300 text-3xl leading-[0.8] mt-4 md:mt-0 md:leading-[1.2] md:text-4xl -translate-y-4 w-full text-center`}
                     >
                         memorize things the most pure way
                     </span>

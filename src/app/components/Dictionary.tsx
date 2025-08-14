@@ -153,6 +153,7 @@ export default function Dictionary({
                 </div>
             </div>
             <Button
+                disabled={items.length === 0}
                 className='w-full text-md flex justify-center gap-2 items-center'
                 onClick={() => {
                     router.push(

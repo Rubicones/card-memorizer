@@ -1,7 +1,7 @@
 "use client";
 
 import { cn, updateDictionaries } from "@/lib/utils";
-import { Check, LoaderCircle, Plus, X } from "lucide-react";
+import { Check, LoaderCircle, Plus, X, User } from "lucide-react";
 import { Birthstone } from "next/font/google";
 import { Imperial_Script } from "next/font/google";
 import { Tangerine } from "next/font/google";
@@ -64,6 +64,8 @@ export interface Dictionaries {
 
 export default function Home() {
     const [isUserLoggedIn, setIsUserLoggedIn] = useState(true);
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const settingsRef = useRef<HTMLDivElement | null>(null);
     // const [token, setToken] = useState("");
     const dictionariesStore = useAppSelector((state) => state.dictionaries);
     const dispatch = useAppDispatch();
@@ -89,10 +91,15 @@ export default function Home() {
     const [isLoading, setIsLoading] = useState(true);
 
     const getDictionaries = () => {
-        if (!localStorage.getItem("sb-eecgcvumtskvsmesfbem-auth-token")) {
+        if (
+            localStorage &&
+            !localStorage.getItem("sb-eecgcvumtskvsmesfbem-auth-token")
+        ) {
             setIsLoading(false);
             return;
         }
+        console.log(supabase);
+
         axios
             .get("/api/get_dictionaries", {
                 headers: {
@@ -133,11 +140,58 @@ export default function Home() {
     }, []);
 
     useEffect(() => {
+        const onClickOutside = (e: MouseEvent) => {
+            if (
+                settingsRef.current &&
+                !settingsRef.current.contains(e.target as Node)
+            ) {
+                setIsSettingsOpen(false);
+            }
+        };
+        const onEsc = (e: KeyboardEvent) => {
+            if (e.key === "Escape") setIsSettingsOpen(false);
+        };
+        document.addEventListener("mousedown", onClickOutside);
+        document.addEventListener("keydown", onEsc);
+        return () => {
+            document.removeEventListener("mousedown", onClickOutside);
+            document.removeEventListener("keydown", onEsc);
+        };
+    }, []);
+
+    useEffect(() => {
         getDictionaries();
     }, []);
 
     return (
         <>
+            {isUserLoggedIn && (
+                <div ref={settingsRef} className='fixed top-5 right-5 z-40'>
+                    <button
+                        aria-label='Open settings'
+                        onClick={() => setIsSettingsOpen((prev) => !prev)}
+                        className='h-10 w-10 rounded-full border border-border bg-background/80 backdrop-blur text-foreground hover:bg-foreground/10 inline-flex items-center justify-center shadow-sm'
+                    >
+                        <User className='w-5 h-5 text-neutral-400' />
+                    </button>
+                    {isSettingsOpen && (
+                        <div className='absolute right-0 mt-2 w-40 rounded-md border border-border bg-background shadow-sm overflow-hidden'>
+                            <button
+                                className='w-full text-left px-3 py-2 text-sm hover:bg-foreground/10'
+                                onClick={async () => {
+                                    try {
+                                        await supabase.auth.signOut();
+                                    } catch {}
+                                    localStorage.clear();
+                                    location.reload();
+                                }}
+                            >
+                                Logout
+                            </button>
+                        </div>
+                    )}
+                </div>
+            )}
             <div className='w-full flex justify-center'>
                 <div
                     className={cn(
@@ -147,7 +201,9 @@ export default function Home() {
                         "w-full max-w-[600px] flex flex-col justify-start items-start relative overflow-hidden no-scrollbar overscroll-contain p-6"
                     )}
                 >
-                    <span className={`birthstone-regular text-white text-4xl md:text-6xl w-full text-center`}>
+                    <span
+                        className={`birthstone-regular text-white text-4xl md:text-6xl w-full text-center`}
+                    >
                         Memento
                     </span>
                     <span
